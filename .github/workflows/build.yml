@@ -1,0 +1,96 @@
+name: Build FakeLag IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+
+    - name: Show Xcode version
+      run: xcodebuild -version
+
+    - name: Build (no signing)
+      run: |
+        xcodebuild build \
+          -project FakeLag/FakeLag.xcodeproj \
+          -scheme FakeLag \
+          -configuration Release \
+          -sdk iphoneos \
+          -destination "generic/platform=iOS" \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          PROVISIONING_PROFILE="" \
+          DEVELOPMENT_TEAM="" \
+          ONLY_ACTIVE_ARCH=NO \
+          BUILD_DIR="$(pwd)/build" \
+          | xcpretty || true
+
+    - name: Find .app bundle
+      run: |
+        echo "=== Searching for .app ==="
+        find $(pwd)/build -name "*.app" -type d 2>/dev/null || true
+        find ~/Library/Developer/Xcode/DerivedData -name "FakeLag.app" -type d 2>/dev/null | head -5 || true
+
+    - name: Package IPA (unsigned)
+      run: |
+        # Try build dir first, then DerivedData
+        APP_PATH=$(find $(pwd)/build -name "FakeLag.app" -type d 2>/dev/null | head -1)
+        if [ -z "$APP_PATH" ]; then
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "FakeLag.app" -type d 2>/dev/null | grep "Release-iphoneos" | head -1)
+        fi
+        if [ -z "$APP_PATH" ]; then
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "FakeLag.app" -type d 2>/dev/null | head -1)
+        fi
+
+        echo "Found .app at: $APP_PATH"
+
+        mkdir -p Payload
+        cp -r "$APP_PATH" Payload/
+        zip -qr FakeLag-unsigned.ipa Payload/
+        echo "IPA created: $(ls -lh FakeLag-unsigned.ipa)"
+
+    - name: Upload IPA artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: FakeLag-IPA
+        path: FakeLag-unsigned.ipa
+        retention-days: 30
+
+    - name: Create Release
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ github.run_number }}
+        name: "FakeLag v${{ github.run_number }}"
+        body: |
+          ## FakeLag iOS App - Unsigned IPA
+
+          ### 📱 Installation
+          - **TrollStore**: Drag IPA into TrollStore → Install
+          - **AltStore**: Open IPA with AltStore on your iPhone
+
+          ### 🎮 How to Use
+          1. Press the big **START** button
+          2. App switches to another app automatically
+          3. After **2 seconds** → network lag activates (~800ms delay per request)
+          4. After another **2 seconds** → lag stops automatically
+          5. Use the slider to resize the button
+
+          ### ⚠️ Note
+          This is an **unsigned IPA** — requires TrollStore or AltStore to install.
+        files: FakeLag-unsigned.ipa
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
