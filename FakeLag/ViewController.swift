@@ -1,4 +1,11 @@
 import UIKit
+import NetworkExtension
+
+// MARK: - Shared app group config
+private let kAppGroup   = "group.com.fakelag.app"
+private let kLagKey     = "lagEnabled"
+private let kDelayKey   = "lagDelayMs"
+private let kTunnelBundle = "com.fakelag.app.tunnel"
 
 class ViewController: UIViewController {
 
@@ -284,67 +291,123 @@ class ViewController: UIViewController {
 
         updateStatus(text: "SWITCHING APP...", color: UIColor(red: 1.0, green: 0.8, blue: 0.2, alpha: 1))
 
-        // Switch to another app (open device home screen / safari briefly)
-        switchToOtherApp()
+        // Open Free Fire / Free Fire MAX
+        openFreeFireGame()
 
-        // After 2 seconds: enable lag
+        // After 2 seconds: start the VPN tunnel and enable lag
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.enableLag()
+            self.enableSystemLag()
 
-            // After another 2 seconds: disable lag
+            // After another 2 seconds: stop lag
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.disableLag()
+                self.disableSystemLag()
             }
         }
     }
 
-    private func switchToOtherApp() {
-        // Attempt to launch Garena Free Fire or Free Fire MAX
+    // MARK: - Free Fire launch
+
+    private func openFreeFireGame() {
         let schemes = ["freefire://", "freefiremax://"]
-        
-        func tryOpenScheme(index: Int) {
+
+        func tryNext(index: Int) {
             guard index < schemes.count else {
-                // Fallback: send app to background by opening phone settings if Free Fire is not installed
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
                 return
             }
-            
-            let scheme = schemes[index]
-            if let url = URL(string: scheme) {
+            if let url = URL(string: schemes[index]) {
                 UIApplication.shared.open(url, options: [:]) { success in
-                    if !success {
-                        // Try next scheme (e.g. Free Fire MAX if standard Free Fire failed)
-                        tryOpenScheme(index: index + 1)
-                    }
+                    if !success { tryNext(index: index + 1) }
                 }
             } else {
-                tryOpenScheme(index: index + 1)
+                tryNext(index: index + 1)
             }
         }
-        
-        tryOpenScheme(index: 0)
+
+        tryNext(index: 0)
     }
 
-    private func enableLag() {
-        LagURLProtocol.isLagEnabled = true
+    // MARK: - System-wide lag via NEVPNManager + Packet Tunnel
 
+    private func enableSystemLag() {
+        // Signal the tunnel extension via shared UserDefaults (App Group)
+        let defaults = UserDefaults(suiteName: kAppGroup)
+        defaults?.set(true, forKey: kLagKey)
+        defaults?.set(800, forKey: kDelayKey)
+        defaults?.synchronize()
+
+        // Load & start the VPN tunnel
+        NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
+            guard let self = self else { return }
+            let manager = managers?.first ?? NETunnelProviderManager()
+            manager.localizedDescription = "FakeLag - Network Simulator"
+
+            let proto = NETunnelProviderProtocol()
+            proto.providerBundleIdentifier = kTunnelBundle
+            proto.serverAddress = "FakeLag"
+            proto.providerConfiguration = [:]
+            manager.protocolConfiguration = proto
+            manager.isEnabled = true
+
+            manager.saveToPreferences { saveError in
+                if let e = saveError {
+                    print("[FakeLag] VPN save error: \(e)")
+                    return
+                }
+                manager.loadFromPreferences { _ in
+                    do {
+                        try (manager.connection as! NETunnelProviderSession).startTunnel(options: nil)
+                        DispatchQueue.main.async {
+                            self.onLagEnabled()
+                        }
+                    } catch {
+                        print("[FakeLag] VPN start error: \(error)")
+                        DispatchQueue.main.async {
+                            // Fallback to URLProtocol-based lag if tunnel fails
+                            LagURLProtocol.isLagEnabled = true
+                            self.onLagEnabled()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func disableSystemLag() {
+        // Turn off lag flag in shared defaults
+        let defaults = UserDefaults(suiteName: kAppGroup)
+        defaults?.set(false, forKey: kLagKey)
+        defaults?.synchronize()
+
+        // Stop VPN tunnel
+        NETunnelProviderManager.loadAllFromPreferences { managers, _ in
+            managers?.forEach { manager in
+                manager.connection.stopVPNTunnel()
+            }
+        }
+
+        // Also disable URLProtocol fallback
+        LagURLProtocol.isLagEnabled = false
+
+        DispatchQueue.main.async {
+            self.onLagDisabled()
+        }
+    }
+
+    private func onLagEnabled() {
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.warning)
-
         updateStatus(text: "⚡ LAG ACTIVE", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1))
         startPulseAnimation()
         showTimer(seconds: 2)
     }
 
-    private func disableLag() {
-        LagURLProtocol.isLagEnabled = false
+    private func onLagDisabled() {
         isRunning = false
-
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.success)
-
         stopPulseAnimation()
         updateStatus(text: "STANDBY", color: UIColor(red: 0.3, green: 0.9, blue: 0.5, alpha: 1))
         hideTimer()
