@@ -65,5 +65,10 @@
 	</array>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>freefire</string>
+		<string>freefiremax</string>
+	</array>
 </dict>
 </plist>

@@ -299,23 +299,32 @@ class ViewController: UIViewController {
     }
 
     private func switchToOtherApp() {
-        // Open a URL that triggers the device to switch to another app
-        // Using the clock app URL scheme as an innocuous switch
-        let urlSchemes = ["clock-worldclock://", "clock://", "weather://", "maps://"]
-        var opened = false
-        for scheme in urlSchemes {
-            if let url = URL(string: scheme), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                opened = true
-                break
+        // Attempt to launch Garena Free Fire or Free Fire MAX
+        let schemes = ["freefire://", "freefiremax://"]
+        
+        func tryOpenScheme(index: Int) {
+            guard index < schemes.count else {
+                // Fallback: send app to background by opening phone settings if Free Fire is not installed
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+                return
+            }
+            
+            let scheme = schemes[index]
+            if let url = URL(string: scheme) {
+                UIApplication.shared.open(url, options: [:]) { success in
+                    if !success {
+                        // Try next scheme (e.g. Free Fire MAX if standard Free Fire failed)
+                        tryOpenScheme(index: index + 1)
+                    }
+                }
+            } else {
+                tryOpenScheme(index: index + 1)
             }
         }
-        if !opened {
-            // Fallback: send app to background by opening phone settings
-            if let url = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-        }
+        
+        tryOpenScheme(index: 0)
     }
 
     private func enableLag() {
