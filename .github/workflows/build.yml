@@ -22,7 +22,7 @@ jobs:
     - name: Build (no signing)
       run: |
         xcodebuild build \
-          -project FakeLag/FakeLag.xcodeproj \
+          -project FakeLag.xcodeproj \
           -scheme FakeLag \
           -configuration Release \
           -sdk iphoneos \
