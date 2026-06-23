@@ -35,9 +35,7 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           PROVISIONING_PROFILE="" \
           DEVELOPMENT_TEAM="" \
-          ONLY_ACTIVE_ARCH=NO \
-          BUILD_DIR="$(pwd)/build" \
-          | xcpretty || true
+          BUILD_DIR="$(pwd)/build"
 
     - name: Find .app bundle
       run: |
