@@ -68,14 +68,14 @@ jobs:
         # Verify the PlugIns/FakeLagTunnel.appex is embedded
         ls -la "Payload/FakeLag.app/PlugIns/" 2>/dev/null || echo "No PlugIns dir yet"
 
-        zip -qr FakeLag-unsigned.ipa Payload/
-        echo "IPA created: $(ls -lh FakeLag-unsigned.ipa)"
+        zip -qr FakeLag.tipa Payload/
+        echo "TIPA created: $(ls -lh FakeLag.tipa)"
 
     - name: Upload IPA artifact
       uses: actions/upload-artifact@v4
       with:
-        name: FakeLag-IPA
-        path: FakeLag-unsigned.ipa
+        name: FakeLag-TIPA
+        path: FakeLag.tipa
         retention-days: 30
 
     - name: Create Release
@@ -85,7 +85,7 @@ jobs:
         tag_name: v${{ github.run_number }}
         name: "FakeLag v${{ github.run_number }} - System Lag"
         body: |
-          ## FakeLag iOS App - System-wide Network Lag (Unsigned IPA)
+          ## FakeLag iOS App - System-wide Network Lag (TrollStore TIPA)
 
           ### 🌐 Tính năng mới: Nút nổi làm lag trong trận (TrollStore)
           - **Floating Button** — Nhấn START trong app sẽ hiện một nút tròn nổi màu xanh di chuyển được khắp màn hình chính và đè lên game khác.
@@ -93,7 +93,7 @@ jobs:
           - Lần đầu chạy: iOS sẽ hỏi "Add VPN Configuration?" → bấm **Allow**
 
           ### 📱 Cài đặt (cần TrollStore)
-          - **TrollStore**: Cài đặt file IPA này qua TrollStore để các quyền hệ thống (no-sandbox, system overlay, network extension) hoạt động.
+          - **TrollStore**: Cài đặt file TIPA này qua TrollStore để các quyền hệ thống (no-sandbox, system overlay, network extension) hoạt động.
 
           ### 🎮 Hướng dẫn sử dụng
           1. Mở app FakeLag, nhấn nút **START**.
@@ -107,8 +107,9 @@ jobs:
           - App Group `group.com.fakelag.app` để sync trạng thái giữa app và tunnel
           - Fallback về URLProtocol nếu VPN setup thất bại
 
-        files: FakeLag-unsigned.ipa
+        files: FakeLag.tipa
         draft: false
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
