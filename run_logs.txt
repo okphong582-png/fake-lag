@@ -1,0 +1,286 @@
+﻿2026-06-24T14:51:04.5456820Z Current runner version: '2.335.1'
+2026-06-24T14:51:04.5484860Z ##[group]Runner Image Provisioner
+2026-06-24T14:51:04.5486580Z Hosted Compute Agent
+2026-06-24T14:51:04.5487590Z Version: 20260527.539
+2026-06-24T14:51:04.5488730Z Commit: a891dd388383b896fa6ac04a82c0b75cec981078
+2026-06-24T14:51:04.5490320Z Build Date: 2026-05-27T21:39:57Z
+2026-06-24T14:51:04.5491660Z Worker ID: {8062acd1-bd8b-4925-b064-8d037c025def}
+2026-06-24T14:51:04.5492940Z Azure Region: westus
+2026-06-24T14:51:04.5493910Z ##[endgroup]
+2026-06-24T14:51:04.5497840Z ##[group]Operating System
+2026-06-24T14:51:04.5499300Z macOS
+2026-06-24T14:51:04.5499820Z 14.8.7
+2026-06-24T14:51:04.5500150Z 23J520
+2026-06-24T14:51:04.5500490Z ##[endgroup]
+2026-06-24T14:51:04.5500860Z ##[group]Runner Image
+2026-06-24T14:51:04.5501260Z Image: macos-14-arm64
+2026-06-24T14:51:04.5501630Z Version: 20260608.0118.1
+2026-06-24T14:51:04.5502550Z Included Software: https://github.com/actions/runner-images/blob/macos-14-arm64/20260608.0118/images/macos/macos-14-arm64-Readme.md
+2026-06-24T14:51:04.5503580Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-14-arm64%2F20260608.0118
+2026-06-24T14:51:04.5504220Z ##[endgroup]
+2026-06-24T14:51:04.5505010Z ##[group]GITHUB_TOKEN Permissions
+2026-06-24T14:51:04.5506950Z Contents: write
+2026-06-24T14:51:04.5507320Z Metadata: read
+2026-06-24T14:51:04.5507670Z ##[endgroup]
+2026-06-24T14:51:04.5509410Z Secret source: Actions
+2026-06-24T14:51:04.5509890Z Prepare workflow directory
+2026-06-24T14:51:04.5864120Z Prepare all required actions
+2026-06-24T14:51:04.5916800Z Getting action download info
+2026-06-24T14:51:05.0645330Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-06-24T14:51:05.3695680Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-06-24T14:51:05.5262550Z Download action repository 'softprops/action-gh-release@v2' (SHA:3bb12739c298aeb8a4eeaf626c5b8d85266b0e65)
+2026-06-24T14:51:06.0281610Z Complete job name: build
+2026-06-24T14:51:06.0911210Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-24T14:51:06.0918110Z ##[group]Run actions/checkout@v4
+2026-06-24T14:51:06.0918600Z with:
+2026-06-24T14:51:06.0919050Z   repository: okphong582-png/fake-lag
+2026-06-24T14:51:06.0922140Z   token: ***
+2026-06-24T14:51:06.0922610Z   ssh-strict: true
+2026-06-24T14:51:06.0922980Z   ssh-user: git
+2026-06-24T14:51:06.0923360Z   persist-credentials: true
+2026-06-24T14:51:06.0923730Z   clean: true
+2026-06-24T14:51:06.0924140Z   sparse-checkout-cone-mode: true
+2026-06-24T14:51:06.0924530Z   fetch-depth: 1
+2026-06-24T14:51:06.0924890Z   fetch-tags: false
+2026-06-24T14:51:06.0925230Z   show-progress: true
+2026-06-24T14:51:06.0925660Z   lfs: false
+2026-06-24T14:51:06.0962650Z   submodules: false
+2026-06-24T14:51:06.0963250Z   set-safe-directory: true
+2026-06-24T14:51:06.0964460Z ##[endgroup]
+2026-06-24T14:51:06.6812880Z Syncing repository: okphong582-png/fake-lag
+2026-06-24T14:51:06.6815230Z ##[group]Getting Git version info
+2026-06-24T14:51:06.6815840Z Working directory is '/Users/runner/work/fake-lag/fake-lag'
+2026-06-24T14:51:06.6816680Z [command]/opt/homebrew/bin/git version
+2026-06-24T14:51:06.7190130Z git version 2.54.0
+2026-06-24T14:51:06.7305310Z ##[endgroup]
+2026-06-24T14:51:06.7311860Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/318c8860-abf6-4c27-8a45-37fcf6de39af/.gitconfig'
+2026-06-24T14:51:06.7313520Z Temporarily overriding HOME='/Users/runner/work/_temp/318c8860-abf6-4c27-8a45-37fcf6de39af' before making global git config changes
+2026-06-24T14:51:06.7315260Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-24T14:51:06.7316850Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:06.7465970Z Deleting the contents of '/Users/runner/work/fake-lag/fake-lag'
+2026-06-24T14:51:06.7472090Z ##[group]Initializing the repository
+2026-06-24T14:51:06.7480680Z [command]/opt/homebrew/bin/git init /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:06.8087350Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-24T14:51:06.8088390Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-24T14:51:06.8129430Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-24T14:51:06.8152150Z hint: call:
+2026-06-24T14:51:06.8153390Z hint:
+2026-06-24T14:51:06.8154150Z hint: 	git config --global init.defaultBranch <name>
+2026-06-24T14:51:06.8154830Z hint:
+2026-06-24T14:51:06.8155560Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-24T14:51:06.8156550Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-24T14:51:06.8157800Z hint:
+2026-06-24T14:51:06.8158280Z hint: 	git branch -m <name>
+2026-06-24T14:51:06.8158880Z hint:
+2026-06-24T14:51:06.8159560Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-24T14:51:06.8160600Z Initialized empty Git repository in /Users/runner/work/fake-lag/fake-lag/.git/
+2026-06-24T14:51:06.8162750Z [command]/opt/homebrew/bin/git remote add origin https://github.com/okphong582-png/fake-lag
+2026-06-24T14:51:06.8168800Z ##[endgroup]
+2026-06-24T14:51:06.8171450Z ##[group]Disabling automatic garbage collection
+2026-06-24T14:51:06.8173540Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-06-24T14:51:06.8216400Z ##[endgroup]
+2026-06-24T14:51:06.8217640Z ##[group]Setting up auth
+2026-06-24T14:51:06.8218760Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-24T14:51:06.8292810Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-24T14:51:06.9263730Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-24T14:51:06.9305830Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-24T14:51:06.9808750Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-24T14:51:06.9849640Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-24T14:51:07.0370700Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-24T14:51:07.0415090Z ##[endgroup]
+2026-06-24T14:51:07.0415800Z ##[group]Fetching the repository
+2026-06-24T14:51:07.0420080Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d25a793df4ac7ff634550db4a915e7f85edf29d6:refs/remotes/origin/main
+2026-06-24T14:51:07.5204000Z From https://github.com/okphong582-png/fake-lag
+2026-06-24T14:51:07.5205100Z  * [new ref]         d25a793df4ac7ff634550db4a915e7f85edf29d6 -> origin/main
+2026-06-24T14:51:07.5262020Z ##[endgroup]
+2026-06-24T14:51:07.5262940Z ##[group]Determining the checkout info
+2026-06-24T14:51:07.5263840Z ##[endgroup]
+2026-06-24T14:51:07.5264860Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-06-24T14:51:07.5322300Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-24T14:51:07.5363650Z ##[group]Checking out the ref
+2026-06-24T14:51:07.5366050Z [command]/opt/homebrew/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-06-24T14:51:07.5474110Z Switched to a new branch 'main'
+2026-06-24T14:51:07.5482190Z branch 'main' set up to track 'origin/main'.
+2026-06-24T14:51:07.5486910Z ##[endgroup]
+2026-06-24T14:51:07.5550670Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-06-24T14:51:07.5591210Z d25a793df4ac7ff634550db4a915e7f85edf29d6
+2026-06-24T14:51:07.5782850Z ##[group]Run sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+2026-06-24T14:51:07.5784780Z [36;1msudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer[0m
+2026-06-24T14:51:07.5850940Z shell: /bin/bash -e {0}
+2026-06-24T14:51:07.5851760Z ##[endgroup]
+2026-06-24T14:51:07.6625550Z ##[group]Run xcodebuild -version
+2026-06-24T14:51:07.6626550Z [36;1mxcodebuild -version[0m
+2026-06-24T14:51:07.6678930Z shell: /bin/bash -e {0}
+2026-06-24T14:51:07.6679660Z ##[endgroup]
+2026-06-24T14:51:07.8278160Z Xcode 15.4
+2026-06-24T14:51:07.8287960Z Build version 15F31d
+2026-06-24T14:51:07.8362800Z ##[group]Run xcodebuild build \
+2026-06-24T14:51:07.8363740Z [36;1mxcodebuild build \[0m
+2026-06-24T14:51:07.8364560Z [36;1m  -project FakeLag.xcodeproj \[0m
+2026-06-24T14:51:07.8365540Z [36;1m  -target FakeLagTunnel \[0m
+2026-06-24T14:51:07.8366380Z [36;1m  -configuration Release \[0m
+2026-06-24T14:51:07.8367210Z [36;1m  -sdk iphoneos \[0m
+2026-06-24T14:51:07.8368450Z [36;1m  -destination "generic/platform=iOS" \[0m
+2026-06-24T14:51:07.8369420Z [36;1m  CODE_SIGN_IDENTITY="" \[0m
+2026-06-24T14:51:07.8370230Z [36;1m  CODE_SIGNING_REQUIRED=NO \[0m
+2026-06-24T14:51:07.8372400Z [36;1m  CODE_SIGNING_ALLOWED=NO \[0m
+2026-06-24T14:51:07.8373280Z [36;1m  PROVISIONING_PROFILE="" \[0m
+2026-06-24T14:51:07.8374130Z [36;1m  DEVELOPMENT_TEAM="" \[0m
+2026-06-24T14:51:07.8375070Z [36;1m  BUILD_DIR="$(pwd)/build"[0m
+2026-06-24T14:51:07.8438530Z shell: /bin/bash -e {0}
+2026-06-24T14:51:07.8439370Z ##[endgroup]
+2026-06-24T14:51:09.6462800Z Command line invocation:
+2026-06-24T14:51:09.6468790Z     /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/xcodebuild build -project FakeLag.xcodeproj -target FakeLagTunnel -configuration Release -sdk iphoneos -destination generic/platform=iOS CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO PROVISIONING_PROFILE= DEVELOPMENT_TEAM= BUILD_DIR=/Users/runner/work/fake-lag/fake-lag/build
+2026-06-24T14:51:09.6471440Z 
+2026-06-24T14:51:09.6471570Z User defaults from command line:
+2026-06-24T14:51:09.6471840Z     IDEPackageSupportUseBuiltinSCM = YES
+2026-06-24T14:51:09.6472030Z 
+2026-06-24T14:51:09.6472170Z Build settings from command line:
+2026-06-24T14:51:09.6472480Z     BUILD_DIR = /Users/runner/work/fake-lag/fake-lag/build
+2026-06-24T14:51:09.6473770Z     CODE_SIGN_IDENTITY = 
+2026-06-24T14:51:09.6474450Z     CODE_SIGNING_ALLOWED = NO
+2026-06-24T14:51:09.6474780Z     CODE_SIGNING_REQUIRED = NO
+2026-06-24T14:51:09.6475100Z     DEVELOPMENT_TEAM = 
+2026-06-24T14:51:09.6475320Z     PROVISIONING_PROFILE = 
+2026-06-24T14:51:09.6475580Z     SDKROOT = iphoneos17.5
+2026-06-24T14:51:09.6475750Z 
+2026-06-24T14:51:18.4266600Z note: Using codesigning identity override: 
+2026-06-24T14:51:19.4673960Z ComputeTargetDependencyGraph
+2026-06-24T14:51:19.4688470Z note: Building targets in dependency order
+2026-06-24T14:51:19.4689390Z note: Target dependency graph (1 target)
+2026-06-24T14:51:19.4690250Z     Target 'FakeLagTunnel' in project 'FakeLag' (no dependencies)
+2026-06-24T14:51:19.4699460Z 
+2026-06-24T14:51:19.4700740Z GatherProvisioningInputs
+2026-06-24T14:51:19.4702650Z 
+2026-06-24T14:51:19.4708630Z CreateBuildDescription
+2026-06-24T14:51:19.4710600Z 
+2026-06-24T14:51:19.4711340Z ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -v
+2026-06-24T14:51:19.9490880Z 
+2026-06-24T14:51:19.9500100Z ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -x c -c /dev/null
+2026-06-24T14:51:20.3853020Z 
+2026-06-24T14:51:20.3991590Z ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+2026-06-24T14:51:20.6420940Z 
+2026-06-24T14:51:20.6645280Z Build description signature: 2b3773d1510d9ed9ae8c9d81853b6efb
+2026-06-24T14:51:20.6646660Z Build description path: /Users/runner/work/fake-lag/fake-lag/build/XCBuildData/2b3773d1510d9ed9ae8c9d81853b6efb.xcbuilddata
+2026-06-24T14:51:20.6743210Z CreateBuildDirectory /Users/runner/work/fake-lag/fake-lag/build
+2026-06-24T14:51:20.6745240Z     cd /Users/runner/work/fake-lag/fake-lag/FakeLag.xcodeproj
+2026-06-24T14:51:20.6745820Z     builtin-create-build-directory /Users/runner/work/fake-lag/fake-lag/build
+2026-06-24T14:51:20.6857650Z 
+2026-06-24T14:51:20.6870560Z ClangStatCache /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache
+2026-06-24T14:51:20.6872660Z     cd /Users/runner/work/fake-lag/fake-lag/FakeLag.xcodeproj
+2026-06-24T14:51:20.6875060Z     /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -o /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache
+2026-06-24T14:51:23.1478820Z 
+2026-06-24T14:51:23.1479770Z CreateBuildDirectory /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos
+2026-06-24T14:51:23.1480820Z     cd /Users/runner/work/fake-lag/fake-lag/FakeLag.xcodeproj
+2026-06-24T14:51:23.1482760Z     builtin-create-build-directory /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos
+2026-06-24T14:51:23.1484060Z 
+2026-06-24T14:51:23.1485180Z CreateBuildDirectory /Users/runner/work/fake-lag/fake-lag/build/EagerLinkingTBDs/Release-iphoneos
+2026-06-24T14:51:23.1487160Z     cd /Users/runner/work/fake-lag/fake-lag/FakeLag.xcodeproj
+2026-06-24T14:51:23.1494370Z     builtin-create-build-directory /Users/runner/work/fake-lag/fake-lag/build/EagerLinkingTBDs/Release-iphoneos
+2026-06-24T14:51:23.1494830Z 
+2026-06-24T14:51:23.1495250Z MkDir /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLagTunnel.appex (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1495870Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1496400Z     /bin/mkdir -p /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLagTunnel.appex
+2026-06-24T14:51:23.1496700Z 
+2026-06-24T14:51:23.1497280Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/all-product-headers.yaml (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1498110Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1498710Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/all-product-headers.yaml
+2026-06-24T14:51:23.1499330Z 
+2026-06-24T14:51:23.1501180Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel.hmap (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1502020Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1502540Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel.hmap
+2026-06-24T14:51:23.1503000Z 
+2026-06-24T14:51:23.1503780Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-project-headers.hmap (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1504540Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1509220Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-project-headers.hmap
+2026-06-24T14:51:23.1509730Z 
+2026-06-24T14:51:23.1510790Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-own-target-headers.hmap (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1511750Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1512460Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-own-target-headers.hmap
+2026-06-24T14:51:23.1512930Z 
+2026-06-24T14:51:23.1516730Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-generated-files.hmap (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1517680Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1518350Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-generated-files.hmap
+2026-06-24T14:51:23.1518890Z 
+2026-06-24T14:51:23.1519940Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-target-headers.hmap (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1520700Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1521380Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-target-headers.hmap
+2026-06-24T14:51:23.1521850Z 
+2026-06-24T14:51:23.1522560Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-non-framework-target-headers.hmap (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1523480Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1529470Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-non-framework-target-headers.hmap
+2026-06-24T14:51:23.1530120Z 
+2026-06-24T14:51:23.1530770Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.LinkFileList (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1531590Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1540410Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.LinkFileList
+2026-06-24T14:51:23.1542140Z 
+2026-06-24T14:51:23.1544100Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel_const_extract_protocols.json (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1546370Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1547140Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel_const_extract_protocols.json
+2026-06-24T14:51:23.1547740Z 
+2026-06-24T14:51:23.1548380Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.SwiftFileList (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1549150Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1549780Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.SwiftFileList
+2026-06-24T14:51:23.1550320Z 
+2026-06-24T14:51:23.1550980Z WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-OutputFileMap.json (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1579240Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1585500Z     write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-OutputFileMap.json
+2026-06-24T14:51:23.1590350Z 
+2026-06-24T14:51:23.1591120Z ProcessInfoPlistFile /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLagTunnel.appex/Info.plist /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/Info.plist (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1593200Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1598880Z     builtin-infoPlistUtility /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/Info.plist -producttype com.apple.product-type.app-extension -expandbuildsettings -format binary -platform iphoneos -requiredArchitecture arm64 -o /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLagTunnel.appex/Info.plist
+2026-06-24T14:51:23.1600190Z 
+2026-06-24T14:51:23.1600620Z SwiftDriver FakeLagTunnel normal arm64 com.apple.xcode.tools.swift.compiler (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.1601340Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.1623600Z     builtin-SwiftDriver -- /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name FakeLagTunnel -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.SwiftFileList -sdk /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -target arm64-apple-ios14.0 -enable-bare-slash-regex -g -Xfrontend -serialize-debugging-options -application-extension -swift-version 5 -I /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -F /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -parse-as-library -emit-localized-strings -emit-localized-strings-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache -output-file-map /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftmodule -validate-clang-modules-once -clang-build-session-file /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-generated-files.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-project-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/include -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-Swift.h -working-directory /Users/runner/work/fake-lag/fake-lag -no-emit-module-separately-wmo
+2026-06-24T14:51:23.2172250Z 
+2026-06-24T14:51:23.2593100Z SwiftCompile normal arm64 Compiling\ PacketTunnelProvider.swift /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.2916170Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.3384680Z     builtin-swiftTaskExecution -- /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift -emit-module-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftmodule -emit-module-doc-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftdoc -emit-module-source-info-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftsourceinfo -emit-dependencies-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-master.d -emit-const-values-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-master.swiftconstvalues -serialize-diagnostics-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-master.dia -emit-objc-header-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-Swift.h -emit-abi-descriptor-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.abi.json -emit-localized-strings -emit-localized-strings-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64 -target arm64-apple-ios14.0 -Xllvm -aarch64-use-tbi -enable-objc-interop -stack-check -sdk /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -I /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -F /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -no-color-diagnostics -application-extension -g -swift-version 5 -enforce-exclusivity\=checked -O -serialize-debugging-options -const-gather-protocols-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel_const_extract_protocols.json -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/runner/work/fake-lag/fake-lag -resource-dir /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -Xcc -ivfsstatcache -Xcc /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-generated-files.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-project-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/include -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources -module-name FakeLagTunnel -frontend-parseable-output -disable-clang-spi -target-sdk-version 17.5 -target-sdk-name iphoneos17.5 -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/local/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -enable-default-cmo -parse-as-library -num-threads 3 -o /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/PacketTunnelProvider.o -index-unit-output-path /FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/PacketTunnelProvider.o
+2026-06-24T14:51:23.4090490Z 
+2026-06-24T14:51:23.4194820Z SwiftCompile normal arm64 /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:23.4296190Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:23.4420820Z     /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -c /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift -emit-module-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftmodule -emit-module-doc-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftdoc -emit-module-source-info-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftsourceinfo -emit-dependencies-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-master.d -emit-const-values-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-master.swiftconstvalues -serialize-diagnostics-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-master.dia -emit-objc-header-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-Swift.h -emit-abi-descriptor-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.abi.json -emit-localized-strings -emit-localized-strings-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64 -target arm64-apple-ios14.0 -Xllvm -aarch64-use-tbi -enable-objc-interop -stack-check -sdk /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -I /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -F /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -no-color-diagnostics -application-extension -g -swift-version 5 -enforce-exclusivity\=checked -O -serialize-debugging-options -const-gather-protocols-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel_const_extract_protocols.json -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/runner/work/fake-lag/fake-lag -resource-dir /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -Xcc -ivfsstatcache -Xcc /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-generated-files.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-project-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/include -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources -module-name FakeLagTunnel -frontend-parseable-output -disable-clang-spi -target-sdk-version 17.5 -target-sdk-name iphoneos17.5 -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/local/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -enable-default-cmo -parse-as-library -num-threads 3 -o /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/PacketTunnelProvider.o -index-unit-output-path /FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/PacketTunnelProvider.o
+2026-06-24T14:51:26.9453830Z /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift:108:71: error: cannot convert value of type '[sa_family_t]' (aka 'Array<UInt8>') to expected argument type '[NSNumber]'
+2026-06-24T14:51:26.9455660Z                 self?.packetFlow.writePackets(packets, withProtocols: protos)
+2026-06-24T14:51:26.9456660Z                                                                       ^
+2026-06-24T14:51:26.9457630Z /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift:108:71: note: arguments to generic parameter 'Element' ('sa_family_t' (aka 'UInt8') and 'NSNumber') are expected to be equal
+2026-06-24T14:51:26.9458590Z                 self?.packetFlow.writePackets(packets, withProtocols: protos)
+2026-06-24T14:51:26.9459030Z                                                                       ^
+2026-06-24T14:51:26.9459910Z /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift:114:61: error: cannot convert value of type '[sa_family_t]' (aka 'Array<UInt8>') to expected argument type '[NSNumber]'
+2026-06-24T14:51:26.9460710Z             packetFlow.writePackets(packets, withProtocols: protos)
+2026-06-24T14:51:26.9461000Z                                                             ^
+2026-06-24T14:51:26.9461670Z /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift:114:61: note: arguments to generic parameter 'Element' ('sa_family_t' (aka 'UInt8') and 'NSNumber') are expected to be equal
+2026-06-24T14:51:26.9465200Z             packetFlow.writePackets(packets, withProtocols: protos)
+2026-06-24T14:51:26.9465710Z                                                             ^
+2026-06-24T14:51:26.9466250Z 
+2026-06-24T14:51:26.9466670Z SwiftDriver\ Compilation FakeLagTunnel normal arm64 com.apple.xcode.tools.swift.compiler (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:26.9467350Z     cd /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:26.9478140Z     builtin-Swift-Compilation -- /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name FakeLagTunnel -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.SwiftFileList -sdk /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -target arm64-apple-ios14.0 -enable-bare-slash-regex -g -Xfrontend -serialize-debugging-options -application-extension -swift-version 5 -I /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -F /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos -parse-as-library -emit-localized-strings -emit-localized-strings-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache -output-file-map /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel.swiftmodule -validate-clang-modules-once -clang-build-session-file /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-generated-files.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/FakeLagTunnel-project-headers.hmap -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/include -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLagTunnel.build/Objects-normal/arm64/FakeLagTunnel-Swift.h -working-directory /Users/runner/work/fake-lag/fake-lag -no-emit-module-separately-wmo
+2026-06-24T14:51:26.9489110Z 
+2026-06-24T14:51:26.9810220Z ** BUILD FAILED **
+2026-06-24T14:51:26.9810610Z 
+2026-06-24T14:51:26.9810740Z 
+2026-06-24T14:51:26.9810910Z The following build commands failed:
+2026-06-24T14:51:26.9811700Z 	SwiftCompile normal arm64 /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:26.9813350Z 	SwiftCompile normal arm64 Compiling\ PacketTunnelProvider.swift /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/PacketTunnelProvider.swift (in target 'FakeLagTunnel' from project 'FakeLag')
+2026-06-24T14:51:26.9814050Z (2 failures)
+2026-06-24T14:51:26.9996650Z ##[error]Process completed with exit code 65.
+2026-06-24T14:51:27.0455040Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-24T14:51:27.0456360Z Post job cleanup.
+2026-06-24T14:51:27.4228060Z [command]/opt/homebrew/bin/git version
+2026-06-24T14:51:27.4536290Z git version 2.54.0
+2026-06-24T14:51:27.4560980Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/09c2fb86-c98c-40e5-aaf2-294fe39cd091/.gitconfig'
+2026-06-24T14:51:27.4573280Z Temporarily overriding HOME='/Users/runner/work/_temp/09c2fb86-c98c-40e5-aaf2-294fe39cd091' before making global git config changes
+2026-06-24T14:51:27.4574150Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-24T14:51:27.4657720Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/fake-lag/fake-lag
+2026-06-24T14:51:27.4759140Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-24T14:51:27.4819250Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-24T14:51:27.6136770Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-24T14:51:27.6180330Z http.https://github.com/.extraheader
+2026-06-24T14:51:27.6189190Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-06-24T14:51:27.6254210Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-24T14:51:27.7166380Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-24T14:51:27.7274770Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-24T14:51:27.8144730Z Cleaning up orphan processes
+2026-06-24T14:51:28.6579390Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

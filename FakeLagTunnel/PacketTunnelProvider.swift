@@ -101,7 +101,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             // Inject smooth variable delay matching the ping spike profile
             let delayNs = UInt64(delay) * 1_000_000
             let packets  = packetObjects.map { $0.data }
-            let protos   = packetObjects.map { $0.protocolFamily }
+            let protos   = packetObjects.map { NSNumber(value: $0.protocolFamily) }
             DispatchQueue.global(qos: .userInteractive).asyncAfter(
                 deadline: .now() + .nanoseconds(Int(delayNs))
             ) { [weak self] in
@@ -110,8 +110,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         } else {
             // No delay — forward instantly
             let packets = packetObjects.map { $0.data }
-            let protos  = packetObjects.map { $0.protocolFamily }
+            let protos  = packetObjects.map { NSNumber(value: $0.protocolFamily) }
             packetFlow.writePackets(packets, withProtocols: protos)
+
         }
     }
 }
