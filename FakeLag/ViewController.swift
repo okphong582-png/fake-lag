@@ -294,14 +294,9 @@ class ViewController: UIViewController {
         // Open Free Fire / Free Fire MAX
         openFreeFireGame()
 
-        // After 2 seconds: start the VPN tunnel and enable lag
+        // After 2 seconds: start the VPN tunnel and enable lag (4-second spike cycle)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.enableSystemLag()
-
-            // After another 2 seconds: stop lag
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.disableSystemLag()
-            }
         }
     }
 
@@ -335,7 +330,7 @@ class ViewController: UIViewController {
         // Signal the tunnel extension via shared UserDefaults (App Group)
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(true, forKey: kLagKey)
-        defaults?.set(800, forKey: kDelayKey)
+        defaults?.set(Date().timeIntervalSince1970, forKey: "lagStartTime")  // for smooth ramp
         defaults?.synchronize()
 
         // Load & start the VPN tunnel
@@ -357,19 +352,26 @@ class ViewController: UIViewController {
                     return
                 }
                 manager.loadFromPreferences { _ in
-                    do {
-                        try (manager.connection as! NETunnelProviderSession).startTunnel(options: nil)
-                        DispatchQueue.main.async {
-                            self.onLagEnabled()
-                        }
-                    } catch {
-                        print("[FakeLag] VPN start error: \(error)")
-                        DispatchQueue.main.async {
-                            // Fallback to URLProtocol-based lag if tunnel fails
-                            LagURLProtocol.isLagEnabled = true
-                            self.onLagEnabled()
+                do {
+                    try (manager.connection as! NETunnelProviderSession).startTunnel(options: nil)
+                    DispatchQueue.main.async {
+                        self.onLagEnabled()
+                        // Auto-disable after full 4-second ramp cycle
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                            self.disableSystemLag()
                         }
                     }
+                } catch {
+                    print("[FakeLag] VPN start error: \(error)")
+                    DispatchQueue.main.async {
+                        LagURLProtocol.isLagEnabled = true
+                        self.onLagEnabled()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                            self.disableSystemLag()
+                        }
+                    }
+                }
+            }
                 }
             }
         }
@@ -399,9 +401,16 @@ class ViewController: UIViewController {
     private func onLagEnabled() {
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.warning)
-        updateStatus(text: "⚡ LAG ACTIVE", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1))
+        updateStatus(text: "⚡ LAG ACTIVE  0ms→600ms", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1))
         startPulseAnimation()
-        showTimer(seconds: 2)
+        showTimer(seconds: 4)  // full 4-second spike cycle
+        // Animate status label through lag phases
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.updateStatus(text: "⚡ PEAK LAG  600ms", color: UIColor(red: 1.0, green: 0.15, blue: 0.15, alpha: 1))
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self.updateStatus(text: "↓ LAG DROPPING  600ms→0ms", color: UIColor(red: 1.0, green: 0.5, blue: 0.1, alpha: 1))
+        }
     }
 
     private func onLagDisabled() {
