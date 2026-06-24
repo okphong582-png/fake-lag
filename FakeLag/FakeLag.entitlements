@@ -10,5 +10,12 @@
 	<array>
 		<string>group.com.fakelag.app</string>
 	</array>
+	<key>com.apple.private.security.no-sandbox</key>
+	<true/>
+	<key>com.apple.private.presentation-view-service</key>
+	<true/>
+	<key>com.apple.private.keywindow</key>
+	<true/>
 </dict>
 </plist>
+

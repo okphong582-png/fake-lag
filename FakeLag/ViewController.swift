@@ -1,5 +1,7 @@
 import UIKit
 import NetworkExtension
+import AVFoundation
+import AudioToolbox
 
 // MARK: - Shared app group config
 private let kAppGroup   = "group.com.fakelag.app"
@@ -28,6 +30,9 @@ class ViewController: UIViewController {
     private var buttonWidthConstraint: NSLayoutConstraint!
     private var buttonHeightConstraint: NSLayoutConstraint!
     private var pulseAnimation: CAAnimationGroup?
+    private var floatingWindow: FloatingButtonWindow?
+    private var silenceEngine = AudioEngineSilence()
+    private var isLagging = false
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -273,31 +278,83 @@ class ViewController: UIViewController {
 
     @objc private func startButtonTapped() {
         buttonTouchUp()
-        guard !isRunning else { return }
-        isRunning = true
-
-        // Visual feedback
-        UIView.animate(withDuration: 0.15) {
-            self.startButton.alpha = 0.7
-        } completion: { _ in
-            UIView.animate(withDuration: 0.15) {
-                self.startButton.alpha = 1
+        
+        if isRunning {
+            // STOP active mode
+            isRunning = false
+            
+            // Stop background audio session
+            silenceEngine.stop()
+            
+            // Dismiss floating window
+            DispatchQueue.main.async {
+                self.floatingWindow?.isHidden = true
+                self.floatingWindow = nil
             }
+            
+            // Make sure lag is disabled
+            disableSystemLag()
+            
+            // Reset main app UI
+            updateStatus(text: "STANDBY", color: UIColor(red: 0.3, green: 0.9, blue: 0.5, alpha: 1))
+            startButton.setTitle("START", for: .normal)
+            
+            // Set startButton gradient back to normal
+            if let gradLayer = startButton.layer.sublayers?.first(where: { $0.name == "startButtonGrad" }) as? CAGradientLayer {
+                gradLayer.colors = [
+                    UIColor(red: 0.2, green: 0.6, blue: 1.0, alpha: 1).cgColor,
+                    UIColor(red: 0.5, green: 0.2, blue: 1.0, alpha: 1).cgColor
+                ]
+            }
+        } else {
+            // START mode
+            isRunning = true
+            
+            // Start background silence to keep app alive
+            silenceEngine.start()
+            
+            // Create and show the floating button
+            DispatchQueue.main.async {
+                let win = FloatingButtonWindow(actionHandler: { [weak self] in
+                    self?.triggerLagCycleFromFloatingButton()
+                })
+                win.isHidden = false
+                self.floatingWindow = win
+            }
+            
+            // Visual feedback
+            UIView.animate(withDuration: 0.15) {
+                self.startButton.alpha = 0.7
+            } completion: { _ in
+                UIView.animate(withDuration: 0.15) {
+                    self.startButton.alpha = 1
+                }
+            }
+
+            // Haptic feedback
+            let impact = UIImpactFeedbackGenerator(style: .heavy)
+            impact.impactOccurred()
+
+            updateStatus(text: "FLOATING BUTTON ACTIVE", color: UIColor(red: 1.0, green: 0.8, blue: 0.2, alpha: 1))
+            startButton.setTitle("STOP", for: .normal)
+            
+            // Change startButton gradient to red/orange
+            if let gradLayer = startButton.layer.sublayers?.first(where: { $0.name == "startButtonGrad" }) as? CAGradientLayer {
+                gradLayer.colors = [
+                    UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1).cgColor,
+                    UIColor(red: 0.8, green: 0.1, blue: 0.1, alpha: 1).cgColor
+                ]
+            }
+
+            // Open Free Fire / Free Fire MAX
+            openFreeFireGame()
         }
+    }
 
-        // Haptic feedback
-        let impact = UIImpactFeedbackGenerator(style: .heavy)
-        impact.impactOccurred()
-
-        updateStatus(text: "SWITCHING APP...", color: UIColor(red: 1.0, green: 0.8, blue: 0.2, alpha: 1))
-
-        // Open Free Fire / Free Fire MAX
-        openFreeFireGame()
-
-        // After 2 seconds: start the VPN tunnel and enable lag (4-second spike cycle)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.enableSystemLag()
-        }
+    private func triggerLagCycleFromFloatingButton() {
+        guard isRunning else { return }
+        guard !isLagging else { return }
+        enableSystemLag()
     }
 
     // MARK: - Free Fire launch
@@ -327,6 +384,13 @@ class ViewController: UIViewController {
     // MARK: - System-wide lag via NEVPNManager + Packet Tunnel
 
     private func enableSystemLag() {
+        guard !isLagging else { return }
+        isLagging = true
+        
+        if let floatWin = floatingWindow {
+            floatWin.setLagActive(true)
+        }
+
         // Signal the tunnel extension via shared UserDefaults (App Group)
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(true, forKey: kLagKey)
@@ -352,32 +416,38 @@ class ViewController: UIViewController {
                     return
                 }
                 manager.loadFromPreferences { _ in
-                do {
-                    try (manager.connection as! NETunnelProviderSession).startTunnel(options: nil)
-                    DispatchQueue.main.async {
-                        self.onLagEnabled()
-                        // Auto-disable after full 4-second ramp cycle
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
-                            self.disableSystemLag()
+                    do {
+                        try (manager.connection as! NETunnelProviderSession).startTunnel(options: nil)
+                        DispatchQueue.main.async {
+                            self.onLagEnabled()
+                            // Auto-disable after full 4-second ramp cycle
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                                self.disableSystemLag()
+                            }
+                        }
+                    } catch {
+                        print("[FakeLag] VPN start error: \(error)")
+                        DispatchQueue.main.async {
+                            LagURLProtocol.isLagEnabled = true
+                            self.onLagEnabled()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                                self.disableSystemLag()
+                            }
                         }
                     }
-                } catch {
-                    print("[FakeLag] VPN start error: \(error)")
-                    DispatchQueue.main.async {
-                        LagURLProtocol.isLagEnabled = true
-                        self.onLagEnabled()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
-                            self.disableSystemLag()
-                        }
-                    }
-                }
-            }
                 }
             }
         }
     }
 
     private func disableSystemLag() {
+        guard isLagging else { return }
+        isLagging = false
+        
+        if let floatWin = floatingWindow {
+            floatWin.setLagActive(false)
+        }
+
         // Turn off lag flag in shared defaults
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(false, forKey: kLagKey)
@@ -414,7 +484,6 @@ class ViewController: UIViewController {
     }
 
     private func onLagDisabled() {
-        isRunning = false
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.success)
         stopPulseAnimation()
@@ -496,5 +565,211 @@ class ViewController: UIViewController {
         view.layer.shadowRadius = 8
         view.layer.shadowOpacity = 1.0
         view.layer.shadowOffset = .zero
+    }
+}
+
+// MARK: - Background Audio Silence Engine
+class AudioEngineSilence {
+    private let engine = AVAudioEngine()
+    private var isPlaying = false
+    
+    func start() {
+        guard !isPlaying else { return }
+        isPlaying = true
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("[FakeLag] Background audio session setup failed: \(error)")
+        }
+        
+        let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)!
+        let srcNode = AVAudioSourceNode { _, _, frameCount, audioBufferList -> OSStatus in
+            let abl = UnsafeMutableAudioBufferListPointer(audioBufferList)
+            for buffer in abl {
+                memset(buffer.mData, 0, Int(buffer.mDataByteSize))
+            }
+            return noErr
+        }
+        
+        engine.attach(srcNode)
+        engine.connect(srcNode, to: engine.mainMixerNode, format: format)
+        engine.prepare()
+        do {
+            try engine.start()
+            print("[FakeLag] Background audio engine started successfully.")
+        } catch {
+            print("[FakeLag] Background audio engine start failed: \(error)")
+        }
+    }
+    
+    func stop() {
+        guard isPlaying else { return }
+        isPlaying = false
+        engine.stop()
+        
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("[FakeLag] Audio session deactivation failed: \(error)")
+        }
+    }
+}
+
+// MARK: - Floating Button Window
+class FloatingButtonWindow: UIWindow {
+    
+    init(actionHandler: @escaping () -> Void) {
+        let initialFrame = CGRect(x: 100, y: 150, width: 80, height: 80)
+        super.init(frame: initialFrame)
+        setupWindow(actionHandler: actionHandler)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupWindow(actionHandler: @escaping () -> Void) {
+        self.backgroundColor = .clear
+        self.windowLevel = UIWindow.Level(rawValue: 1000000)
+        self.clipsToBounds = false
+        
+        let vc = FloatingViewController()
+        vc.actionHandler = actionHandler
+        self.rootViewController = vc
+    }
+    
+    func setLagActive(_ active: Bool) {
+        guard let vc = rootViewController as? FloatingViewController else { return }
+        vc.setLagActive(active)
+    }
+}
+
+// MARK: - Floating View Controller
+class FloatingViewController: UIViewController {
+    var actionHandler: (() -> Void)?
+    private var button: UIButton!
+    private var timerLabel: UILabel!
+    private var remainingSeconds = 0
+    private var countdownTimer: Timer?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .clear
+        
+        // Main round button
+        button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("LAG", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .black)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 0.85) // Standby Blue
+        button.layer.cornerRadius = 35 // 70x70 size
+        button.layer.borderWidth = 2.5
+        button.layer.borderColor = UIColor.white.cgColor
+        
+        // Shadow/glow effect
+        button.layer.shadowColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1).cgColor
+        button.layer.shadowOffset = .zero
+        button.layer.shadowRadius = 12
+        button.layer.shadowOpacity = 0.8
+        
+        view.addSubview(button)
+        
+        // Countdown timer label on top of button
+        timerLabel = UILabel()
+        timerLabel.translatesAutoresizingMaskIntoConstraints = false
+        timerLabel.text = ""
+        timerLabel.font = UIFont.monospacedSystemFont(ofSize: 18, weight: .black)
+        timerLabel.textColor = .white
+        timerLabel.textAlignment = .center
+        timerLabel.alpha = 0
+        view.addSubview(timerLabel)
+        
+        NSLayoutConstraint.activate([
+            button.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
+            button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
+            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
+            
+            timerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            timerLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        
+        // Pan gesture
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        view.addGestureRecognizer(panGesture)
+    }
+    
+    @objc private func buttonTapped() {
+        actionHandler?()
+    }
+    
+    func setLagActive(_ active: Bool) {
+        countdownTimer?.invalidate()
+        if active {
+            remainingSeconds = 4
+            timerLabel.text = "\(remainingSeconds)"
+            
+            UIView.animate(withDuration: 0.2) {
+                self.button.backgroundColor = UIColor(red: 1.0, green: 0.25, blue: 0.25, alpha: 0.95) // Active Red
+                self.button.layer.borderColor = UIColor(red: 1.0, green: 0.6, blue: 0.6, alpha: 1).cgColor
+                self.button.layer.shadowColor = UIColor.red.cgColor
+                self.button.setTitle("", for: .normal)
+                self.timerLabel.alpha = 1
+            }
+            
+            // Add pulse animation
+            let anim = CABasicAnimation(keyPath: "transform.scale")
+            anim.fromValue = 1.0
+            anim.toValue = 1.15
+            anim.duration = 0.4
+            anim.autoreverses = true
+            anim.repeatCount = .infinity
+            button.layer.add(anim, forKey: "pulse")
+            
+            countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+                guard let self = self else { return }
+                self.remainingSeconds -= 1
+                if self.remainingSeconds <= 0 {
+                    timer.invalidate()
+                } else {
+                    self.timerLabel.text = "\(self.remainingSeconds)"
+                }
+            }
+        } else {
+            button.layer.removeAnimation(forKey: "pulse")
+            UIView.animate(withDuration: 0.2) {
+                self.button.backgroundColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 0.85) // Standby Blue
+                self.button.layer.borderColor = UIColor.white.cgColor
+                self.button.layer.shadowColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1).cgColor
+                self.button.setTitle("LAG", for: .normal)
+                self.timerLabel.alpha = 0
+            }
+        }
+    }
+    
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        guard let window = view.window else { return }
+        let translation = gesture.translation(in: view)
+        
+        let newCenter = CGPoint(
+            x: window.center.x + translation.x,
+            y: window.center.y + translation.y
+        )
+        
+        let screenBounds = UIScreen.main.bounds
+        let halfWidth = window.bounds.width / 2
+        let halfHeight = window.bounds.height / 2
+        
+        window.center = CGPoint(
+            x: min(max(newCenter.x, halfWidth), screenBounds.width - halfWidth),
+            y: min(max(newCenter.y, halfHeight), screenBounds.height - halfHeight)
+        )
+        
+        gesture.setTranslation(.zero, in: view)
     }
 }

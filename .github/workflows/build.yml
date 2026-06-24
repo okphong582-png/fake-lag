@@ -26,7 +26,7 @@ jobs:
       run: |
         xcodebuild build \
           -project FakeLag.xcodeproj \
-          -scheme FakeLagTunnel \
+          -target FakeLagTunnel \
           -configuration Release \
           -sdk iphoneos \
           -destination "generic/platform=iOS" \
@@ -41,7 +41,7 @@ jobs:
       run: |
         xcodebuild build \
           -project FakeLag.xcodeproj \
-          -scheme FakeLag \
+          -target FakeLag \
           -configuration Release \
           -sdk iphoneos \
           -destination "generic/platform=iOS" \
@@ -87,26 +87,26 @@ jobs:
         body: |
           ## FakeLag iOS App - System-wide Network Lag (Unsigned IPA)
 
-          ### 🌐 Tính năng mới: Lag toàn hệ thống
-          - **Packet Tunnel VPN** — làm nghẽn mọi gói tin IP trên toàn thiết bị (kể cả Free Fire!)
+          ### 🌐 Tính năng mới: Nút nổi làm lag trong trận (TrollStore)
+          - **Floating Button** — Nhấn START trong app sẽ hiện một nút tròn nổi màu xanh di chuyển được khắp màn hình chính và đè lên game khác.
+          - **Packet Tunnel VPN** — Khi nhấn vào nút nổi, VPN tunnel kích hoạt làm nghẽn (lag) toàn hệ thống từ 0ms -> 600ms -> 0ms trong 4 giây rồi tự tắt.
           - Lần đầu chạy: iOS sẽ hỏi "Add VPN Configuration?" → bấm **Allow**
-          - Sau đó mỗi lần nhấn START sẽ tự động bật lag 800ms, tắt sau 2 giây
 
           ### 📱 Cài đặt (cần TrollStore)
-          - **TrollStore**: Kéo IPA vào TrollStore → Install
-          - ⚠️ Cần cài qua **TrollStore** để entitlement network extension có hiệu lực
+          - **TrollStore**: Cài đặt file IPA này qua TrollStore để các quyền hệ thống (no-sandbox, system overlay, network extension) hoạt động.
 
           ### 🎮 Hướng dẫn sử dụng
-          1. Nhấn nút **START** to ở giữa
-          2. App tự động mở **Garena Free Fire** (hoặc Free Fire MAX)
-          3. Sau **2 giây** → VPN tunnel kích hoạt → lag 800ms/gói trên toàn hệ thống
-          4. Sau **2 giây** tiếp → lag tự tắt
-          5. Dùng thanh trượt để thay đổi kích thước nút
+          1. Mở app FakeLag, nhấn nút **START**.
+          2. Nút nổi tròn màu xanh sẽ xuất hiện, đồng thời app tự mở **Free Fire** (hoặc Free Fire MAX).
+          3. Khi đang chơi game, nếu muốn đối thủ bị lag đơ 2 giây, hãy chạm vào **nút nổi**. Nút nổi sẽ chuyển sang màu đỏ và kích hoạt lag trong 4 giây.
+          4. Sau 4 giây, lag tự tắt và nút nổi chuyển về màu xanh.
+          5. Để đóng nút nổi, quay lại app và bấm **STOP**.
 
           ### ⚙️ Kỹ thuật
           - `NEPacketTunnelProvider` intercepts all IP packets
           - App Group `group.com.fakelag.app` để sync trạng thái giữa app và tunnel
           - Fallback về URLProtocol nếu VPN setup thất bại
+
         files: FakeLag-unsigned.ipa
         draft: false
         prerelease: false

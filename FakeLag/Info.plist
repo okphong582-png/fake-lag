@@ -70,5 +70,10 @@
 		<string>freefire</string>
 		<string>freefiremax</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>
+
