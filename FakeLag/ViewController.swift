@@ -27,6 +27,7 @@ class ViewController: UIViewController {
     private var statusIndicator: UIView!
     private var expiryLabel: UILabel!
     private var modeSegmentedControl: UISegmentedControl!
+    var playerContainerView: UIView!
 
     // MARK: - Activation Overlay Elements
     private var activationOverlay: UIVisualEffectView?
@@ -144,11 +145,16 @@ class ViewController: UIViewController {
         expiryLabel.textAlignment = .center
         expiryLabel.translatesAutoresizingMaskIntoConstraints = false
 
+        playerContainerView = UIView()
+        playerContainerView.translatesAutoresizingMaskIntoConstraints = false
+        playerContainerView.alpha = 0.01
+
         view.addSubview(titleLabel)
         view.addSubview(modeSegmentedControl)
         view.addSubview(statusStack)
         view.addSubview(actionLabel)
         view.addSubview(expiryLabel)
+        view.addSubview(playerContainerView)
 
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
@@ -170,7 +176,12 @@ class ViewController: UIViewController {
             actionLabel.heightAnchor.constraint(equalToConstant: 80),
 
             expiryLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            expiryLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            expiryLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+            playerContainerView.widthAnchor.constraint(equalToConstant: 1),
+            playerContainerView.heightAnchor.constraint(equalToConstant: 1),
+            playerContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            playerContainerView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
 
         startPulseAnimation()
@@ -758,7 +769,9 @@ class ViewController: UIViewController {
 class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControllerDelegate {
     weak var viewController: ViewController?
     var pipController: AVPictureInPictureController?
-    var pipVideoCallVC: AVPictureInPictureVideoCallViewController?
+    var player: AVPlayer?
+    var playerLayer: AVPlayerLayer?
+    private var statusObserver: NSKeyValueObservation?
     
     init(viewController: ViewController) {
         self.viewController = viewController
@@ -769,47 +782,89 @@ class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControl
     private func setupPiP() {
         guard let vc = viewController, AVPictureInPictureController.isPictureInPictureSupported() else { return }
         
-        let pipVC = AVPictureInPictureVideoCallViewController()
-        pipVC.preferredContentSize = CGSize(width: 80, height: 80)
-        pipVC.view.backgroundColor = .clear
-        
-        let overlayVC = FloatingViewController()
-        overlayVC.actionHandler = { [weak vc] in
-            vc?.triggerLagCycleFromFloatingButton()
+        guard let videoURL = Bundle.main.url(forResource: "blank", withExtension: "mp4") else {
+            print("[FakeLag] Error: blank.mp4 not found in main bundle")
+            return
         }
         
-        pipVC.addChild(overlayVC)
-        pipVC.view.addSubview(overlayVC.view)
-        overlayVC.view.frame = pipVC.view.bounds
-        overlayVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        overlayVC.didMove(toParent: pipVC)
+        let playerItem = AVPlayerItem(url: videoURL)
+        let player = AVPlayer(playerItem: playerItem)
+        self.player = player
         
-        self.pipVideoCallVC = pipVC
-        
-        let contentSource = AVPictureInPictureController.ContentSource(
-            activeVideoCallSourceView: vc.view,
-            contentViewController: pipVC
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerItemDidReachEnd),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: playerItem
         )
         
-        let pipCtrl = AVPictureInPictureController(contentSource: contentSource)
+        let playerLayer = AVPlayerLayer(player: player)
+        playerLayer.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+        vc.playerContainerView.layer.addSublayer(playerLayer)
+        self.playerLayer = playerLayer
+        
+        let pipCtrl = AVPictureInPictureController(playerLayer: playerLayer)
         pipCtrl.delegate = self
+        pipCtrl.requiresLinearPlayback = false
         pipCtrl.canStartPictureInPictureAutomaticallyFromInline = true
         self.pipController = pipCtrl
+        
+        statusObserver = player.observe(\.timeControlStatus, options: [.old, .new]) { [weak self] player, change in
+            guard let self = self, let vc = self.viewController else { return }
+            DispatchQueue.main.async {
+                if player.timeControlStatus == .paused {
+                    if vc.isRunning {
+                        vc.enableSystemLag()
+                    }
+                } else if player.timeControlStatus == .playing {
+                    vc.disableSystemLag()
+                }
+            }
+        }
+    }
+    
+    @objc private func playerItemDidReachEnd(notification: Notification) {
+        player?.seek(to: .zero)
+        player?.play()
     }
     
     func start() {
-        pipController?.startPictureInPicture()
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, options: [.mixWithOthers])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("[FakeLag] Failed to set audio session for PiP: \(error)")
+        }
+        player?.play()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            self?.pipController?.startPictureInPicture()
+        }
     }
     
     func stop() {
         if pipController?.isPictureInPictureActive == true {
             pipController?.stopPictureInPicture()
         }
+        player?.pause()
+        statusObserver?.invalidate()
+        statusObserver = nil
+        NotificationCenter.default.removeObserver(self)
+        playerLayer?.removeFromSuperlayer()
     }
     
     func setLagActive(_ active: Bool) {
-        if let pipVC = pipVideoCallVC?.children.first as? FloatingViewController {
-            pipVC.setLagActive(active)
+        guard let player = player else { return }
+        DispatchQueue.main.async {
+            if active {
+                if player.timeControlStatus != .paused {
+                    player.pause()
+                }
+            } else {
+                if player.timeControlStatus != .playing {
+                    player.play()
+                }
+            }
         }
     }
     
