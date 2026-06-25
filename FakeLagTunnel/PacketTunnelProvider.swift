@@ -2,7 +2,14 @@ import NetworkExtension
 import Foundation
 
 // MARK: - Shared lag state via UserDefaults App Group
-private let kAppGroup      = "group.com.fakelag.app"
+private var kAppGroup: String {
+    if let extID = Bundle.main.bundleIdentifier {
+        let cleanID = extID.replacingOccurrences(of: ".tunnel", with: "")
+                           .replacingOccurrences(of: ".FakeLagTunnel", with: "")
+        return "group.\(cleanID)"
+    }
+    return "group.com.fakelag.app"
+}
 private let kLagEnabledKey = "lagEnabled"
 private let kLagPhaseKey   = "lagPhase"   // "ramp_up" | "peak" | "ramp_down" | "off"
 private let kLagStartKey   = "lagStartTime"

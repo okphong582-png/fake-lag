@@ -6,9 +6,19 @@ import AVKit
 import ImageIO
 
 // MARK: - Shared Configuration
-private let kAppGroup     = "group.com.fakelag.app"
+private var kAppGroup: String {
+    if let mainID = Bundle.main.bundleIdentifier {
+        return "group.\(mainID)"
+    }
+    return "group.com.fakelag.app"
+}
 private let kLagKey       = "lagEnabled"
-private let kTunnelBundle = "com.fakelag.app.tunnel"
+private var kTunnelBundle: String {
+    if let mainID = Bundle.main.bundleIdentifier {
+        return "\(mainID).tunnel"
+    }
+    return "com.fakelag.app.tunnel"
+}
 private let kSavedKeyName = "licenseKey"
 
 // MARK: - PiP Manager Protocol (iOS 14+ safe interface)
