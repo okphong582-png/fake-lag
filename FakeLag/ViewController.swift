@@ -230,7 +230,7 @@ class ViewController: UIViewController {
     }
 
     private func validateLicenseKey(key: String, completion: @escaping (Bool, String) -> Void) {
-        let cleanKey = key.trimmingCharacters(in: .whitespacesAndNewlines).upperCased()
+        let cleanKey = key.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         guard let url = URL(string: "https://appchatai-313e3-default-rtdb.firebaseio.com/keys/\(cleanKey).json") else {
             completion(false, "Invalid License Endpoint")
             return
@@ -380,7 +380,7 @@ class ViewController: UIViewController {
             self.floatingWindow?.isHidden = true
             self.floatingWindow = nil
 
-            UserDefaults.standard.removeObject(forKey: self.kSavedKeyName)
+            UserDefaults.standard.removeObject(forKey: kSavedKeyName)
             self.showActivationOverlay(errorMessage: reason)
         }
     }
@@ -531,7 +531,7 @@ class ViewController: UIViewController {
     }
 
     @objc private func overlayActivateTapped() {
-        guard let key = keyTextField?.text?.trimmingCharacters(in: .whitespacesAndNewlines).upperCased(), !key.isEmpty else {
+        guard let key = keyTextField?.text?.trimmingCharacters(in: .whitespacesAndNewlines).uppercased(), !key.isEmpty else {
             overlayErrorLabel?.text = "Key cannot be empty"
             overlayErrorLabel?.isHidden = false
             return
@@ -548,7 +548,7 @@ class ViewController: UIViewController {
                 self.overlayActivateButton?.isHidden = false
 
                 if success {
-                    UserDefaults.standard.set(key, forKey: self.kSavedKeyName)
+                    UserDefaults.standard.set(key, forKey: kSavedKeyName)
                     self.expiryLabel.text = "License Expiry: \(details)"
                     self.startAntiCrackDaemon()
                     
