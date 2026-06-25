@@ -2,6 +2,8 @@ import UIKit
 import NetworkExtension
 import AVFoundation
 import AudioToolbox
+import AVKit
+import ImageIO
 
 // MARK: - Shared Configuration
 private let kAppGroup     = "group.com.fakelag.app"
@@ -9,16 +11,15 @@ private let kLagKey       = "lagEnabled"
 private let kTunnelBundle = "com.fakelag.app.tunnel"
 private let kSavedKeyName = "licenseKey"
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
 
     // MARK: - Main UI Elements
+    private var backgroundImageView: UIImageView!
     private var actionLabel: UILabel!
     private var statusLabel: UILabel!
     private var statusIndicator: UIView!
     private var expiryLabel: UILabel!
-    private var gradientLayer: CAGradientLayer!
-    private var particleContainer: UIView!
-    private var glowContainer: UIView!
+    private var modeSegmentedControl: UISegmentedControl!
 
     // MARK: - Activation Overlay Elements
     private var activationOverlay: UIVisualEffectView?
@@ -35,11 +36,14 @@ class ViewController: UIViewController {
     private var antiCrackTimer: Timer?
     private var isCheckingKey = false
 
+    // MARK: - PiP Overlay Properties
+    private var pipController: AVPictureInPictureController?
+    private var pipVideoCallVC: AVPictureInPictureVideoCallViewController?
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupPremiumBackground()
-        setupParticles()
+        setupGifBackground()
         setupMainUI()
         
         // Check for stored key on start
@@ -48,80 +52,26 @@ class ViewController: UIViewController {
         }
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        gradientLayer.frame = view.bounds
-    }
-
-    // MARK: - Premium Styling & Background
-    private func setupPremiumBackground() {
-        view.backgroundColor = UIColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 1.0)
-
-        // Subtle dark ambient gradient
-        gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor(red: 0.04, green: 0.04, blue: 0.06, alpha: 1.0).cgColor,
-            UIColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 1.0).cgColor,
-            UIColor(red: 0.01, green: 0.01, blue: 0.02, alpha: 1.0).cgColor
-        ]
-        gradientLayer.locations = [0, 0.5, 1]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
-        gradientLayer.frame = view.bounds
-        view.layer.insertSublayer(gradientLayer, at: 0)
-
-        // Accent glow circles in background
-        glowContainer = UIView(frame: view.bounds)
-        glowContainer.isUserInteractionEnabled = false
-        view.insertSubview(glowContainer, at: 1)
-
-        let colors = [
-            UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.12).cgColor,
-            UIColor(red: 0.5, green: 0.0, blue: 1.0, alpha: 0.08).cgColor
-        ]
-        let frames = [
-            CGRect(x: -100, y: 100, width: 350, height: 350),
-            CGRect(x: view.bounds.width - 250, y: view.bounds.height - 350, width: 350, height: 350)
-        ]
-
-        for i in 0..<2 {
-            let glow = UIView(frame: frames[i])
-            glow.layer.cornerRadius = frames[i].width / 2
-            let rad = CAGradientLayer()
-            rad.type = .radial
-            rad.colors = [colors[i], UIColor.clear.cgColor]
-            rad.startPoint = CGPoint(x: 0.5, y: 0.5)
-            rad.endPoint = CGPoint(x: 1, y: 1)
-            rad.frame = glow.bounds
-            glow.layer.addSublayer(rad)
-            glowContainer.addSubview(glow)
+    // MARK: - Loop GIF Background
+    private func setupGifBackground() {
+        backgroundImageView = UIImageView()
+        backgroundImageView.contentMode = .scaleAspectFill
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        if let gifImage = UIImage.gifImageWithName("3987") {
+            backgroundImageView.image = gifImage
+        } else {
+            print("[FakeLag] Warning: 3987.gif could not be loaded")
         }
-    }
-
-    private func setupParticles() {
-        particleContainer = UIView(frame: view.bounds)
-        particleContainer.isUserInteractionEnabled = false
-        view.insertSubview(particleContainer, at: 2)
-
-        for _ in 0..<18 {
-            let dot = UIView()
-            let size = CGFloat.random(in: 2...4)
-            dot.frame = CGRect(x: CGFloat.random(in: 0...view.bounds.width),
-                               y: CGFloat.random(in: 0...view.bounds.height),
-                               width: size, height: size)
-            dot.layer.cornerRadius = size / 2
-            dot.backgroundColor = UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: CGFloat.random(in: 0.15...0.4))
-            particleContainer.addSubview(dot)
-
-            let anim = CABasicAnimation(keyPath: "opacity")
-            anim.fromValue = CGFloat.random(in: 0.1...0.3)
-            anim.toValue = 0.0
-            anim.duration = Double.random(in: 3.0...6.0)
-            anim.repeatCount = .infinity
-            anim.autoreverses = true
-            anim.beginTime = CACurrentMediaTime() + Double.random(in: 0...3)
-            dot.layer.add(anim, forKey: "pulse")
-        }
+        
+        view.addSubview(backgroundImageView)
+        
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 
     // MARK: - Main UI Layout
@@ -133,7 +83,20 @@ class ViewController: UIViewController {
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        addGlowToLayer(titleLabel.layer, color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.5).cgColor, radius: 10)
+        addGlowToLayer(titleLabel.layer, color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.8).cgColor, radius: 10)
+
+        // Mode Segmented Control (TrollStore vs Esign PiP)
+        modeSegmentedControl = UISegmentedControl(items: ["TrollStore Mode", "Esign Mode (PiP)"])
+        modeSegmentedControl.selectedSegmentIndex = 0
+        modeSegmentedControl.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        modeSegmentedControl.selectedSegmentTintColor = UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.8)
+        
+        let normalAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.white, .font: UIFont.systemFont(ofSize: 12, weight: .bold)]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.black, .font: UIFont.systemFont(ofSize: 12, weight: .bold)]
+        
+        modeSegmentedControl.setTitleTextAttributes(normalAttributes, for: .normal)
+        modeSegmentedControl.setTitleTextAttributes(selectedAttributes, for: .selected)
+        modeSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
 
         // Status Indicator Row
         statusIndicator = UIView()
@@ -154,20 +117,15 @@ class ViewController: UIViewController {
         statusStack.alignment = .center
         statusStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // Tapable Action Label (Start/Stop System)
+        // Pure borderless text action label (Tap to Start)
         actionLabel = UILabel()
         actionLabel.text = "TAP TO START"
-        actionLabel.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        actionLabel.font = UIFont.systemFont(ofSize: 28, weight: .black)
         actionLabel.textColor = .white
         actionLabel.textAlignment = .center
         actionLabel.isUserInteractionEnabled = true
         actionLabel.translatesAutoresizingMaskIntoConstraints = false
-        actionLabel.layer.borderWidth = 1.5
-        actionLabel.layer.borderColor = UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.4).cgColor
-        actionLabel.layer.cornerRadius = 60
-        actionLabel.clipsToBounds = true
-        actionLabel.backgroundColor = UIColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.6)
-        addGlowToLayer(actionLabel.layer, color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.3).cgColor, radius: 15)
+        addGlowToLayer(actionLabel.layer, color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.8).cgColor, radius: 15)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(actionLabelTapped))
         actionLabel.addGestureRecognizer(tap)
@@ -176,34 +134,74 @@ class ViewController: UIViewController {
         expiryLabel = UILabel()
         expiryLabel.text = "Verifying license key..."
         expiryLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
-        expiryLabel.textColor = UIColor(white: 1.0, alpha: 0.4)
+        expiryLabel.textColor = UIColor(white: 1.0, alpha: 0.5)
         expiryLabel.textAlignment = .center
         expiryLabel.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(titleLabel)
+        view.addSubview(modeSegmentedControl)
         view.addSubview(statusStack)
         view.addSubview(actionLabel)
         view.addSubview(expiryLabel)
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
-            statusStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            modeSegmentedControl.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            modeSegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            modeSegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            modeSegmentedControl.heightAnchor.constraint(equalToConstant: 36),
+
+            statusStack.topAnchor.constraint(equalTo: modeSegmentedControl.bottomAnchor, constant: 16),
             statusStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             statusIndicator.widthAnchor.constraint(equalToConstant: 10),
             statusIndicator.heightAnchor.constraint(equalToConstant: 10),
 
             actionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             actionLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            actionLabel.widthAnchor.constraint(equalToConstant: 220),
-            actionLabel.heightAnchor.constraint(equalToConstant: 120),
+            actionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40),
+            actionLabel.heightAnchor.constraint(equalToConstant: 80),
 
             expiryLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
             expiryLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
 
         startPulseAnimation()
+    }
+
+    // MARK: - Picture-in-Picture Setup
+    private func setupPiP() {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else {
+            print("[FakeLag] PiP is not supported on this device.")
+            return
+        }
+
+        let pipVC = AVPictureInPictureVideoCallViewController()
+        pipVC.preferredContentSize = CGSize(width: 80, height: 80)
+
+        let overlayVC = FloatingViewController()
+        overlayVC.actionHandler = { [weak self] in
+            self?.triggerLagCycleFromFloatingButton()
+        }
+
+        pipVC.addChild(overlayVC)
+        pipVC.view.addSubview(overlayVC.view)
+        overlayVC.view.frame = pipVC.view.bounds
+        overlayVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        overlayVC.didMove(toParent: pipVC)
+
+        self.pipVideoCallVC = pipVC
+
+        let contentSource = AVPictureInPictureController.ContentSource(
+            activeVideoCallSourceView: self.view,
+            contentViewController: pipVC
+        )
+
+        let pipCtrl = AVPictureInPictureController(contentSource: contentSource)
+        pipCtrl.delegate = self
+        pipCtrl.canStartPictureInPictureAutomaticallyFromInline = true
+        self.pipController = pipCtrl
     }
 
     // MARK: - License Verification Logic
@@ -369,7 +367,6 @@ class ViewController: UIViewController {
     private func handleActivationFailure(reason: String) {
         stopAntiCrackDaemon()
         
-        // Terminate any running lag services instantly
         isRunning = false
         isLagging = false
         disableSystemLag()
@@ -379,6 +376,10 @@ class ViewController: UIViewController {
             guard let self = self else { return }
             self.floatingWindow?.isHidden = true
             self.floatingWindow = nil
+
+            if self.pipController?.isPictureInPictureActive == true {
+                self.pipController?.stopPictureInPicture()
+            }
 
             UserDefaults.standard.removeObject(forKey: kSavedKeyName)
             self.showActivationOverlay(errorMessage: reason)
@@ -574,7 +575,6 @@ class ViewController: UIViewController {
 
     // MARK: - Action Triggers
     @objc private func actionLabelTapped() {
-        // Impact feedback
         let feedback = UIImpactFeedbackGenerator(style: .medium)
         feedback.impactOccurred()
 
@@ -583,37 +583,54 @@ class ViewController: UIViewController {
             silenceEngine.stop()
 
             DispatchQueue.main.async { [weak self] in
-                self?.floatingWindow?.isHidden = true
-                self?.floatingWindow = nil
+                guard let self = self else { return }
+                // Dismiss TrollStore window overlay
+                self.floatingWindow?.isHidden = true
+                self.floatingWindow = nil
+
+                // Stop Esign PiP overlay
+                if self.pipController?.isPictureInPictureActive == true {
+                    self.pipController?.stopPictureInPicture()
+                }
             }
 
             disableSystemLag()
             actionLabel.text = "TAP TO START"
-            updateStatus(text: "SYSTEM STANDBY", color: UIColor(white: 1.0, alpha: 0.4))
+            updateStatus(text: "SYSTEM STANDBY", color: UIColor(white: 1.0, alpha: 0.5))
             
             UIView.animate(withDuration: 0.3) {
-                self.actionLabel.layer.borderColor = UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.4).cgColor
-                self.addGlowToLayer(self.actionLabel.layer, color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.3).cgColor, radius: 15)
+                self.addGlowToLayer(self.actionLabel.layer, color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.8).cgColor, radius: 15)
             }
         } else {
             isRunning = true
             silenceEngine.start()
 
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let win = FloatingButtonWindow(actionHandler: { [weak self] in
-                    self?.triggerLagCycleFromFloatingButton()
-                })
-                win.isHidden = false
-                self.floatingWindow = win
+            let isTrollStoreMode = modeSegmentedControl.selectedSegmentIndex == 0
+
+            if isTrollStoreMode {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    let win = FloatingButtonWindow(actionHandler: { [weak self] in
+                        self?.triggerLagCycleFromFloatingButton()
+                    })
+                    win.isHidden = false
+                    self.floatingWindow = win
+                }
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.setupPiP()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        self.pipController?.startPictureInPicture()
+                    }
+                }
             }
 
             actionLabel.text = "TAP TO STOP"
             updateStatus(text: "SERVICE RUNNING", color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 1.0))
 
             UIView.animate(withDuration: 0.3) {
-                self.actionLabel.layer.borderColor = UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 0.8).cgColor
-                self.addGlowToLayer(self.actionLabel.layer, color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 0.5).cgColor, radius: 15)
+                self.addGlowToLayer(self.actionLabel.layer, color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 0.8).cgColor, radius: 15)
             }
         }
     }
@@ -633,13 +650,14 @@ class ViewController: UIViewController {
         isLagging = true
 
         floatingWindow?.setLagActive(true)
+        if let pipVC = pipVideoCallVC?.childViewControllers.first as? FloatingViewController {
+            pipVC.setLagActive(true)
+        }
 
-        // Write lag flag to App Group Defaults
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(true, forKey: kLagKey)
         defaults?.synchronize()
 
-        // Start VPN Tunnel Configuration
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             guard let self = self else { return }
             let manager = managers?.first ?? NETunnelProviderManager()
@@ -680,6 +698,9 @@ class ViewController: UIViewController {
         isLagging = false
 
         floatingWindow?.setLagActive(false)
+        if let pipVC = pipVideoCallVC?.childViewControllers.first as? FloatingViewController {
+            pipVC.setLagActive(false)
+        }
 
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(false, forKey: kLagKey)
@@ -712,7 +733,7 @@ class ViewController: UIViewController {
         if isRunning {
             updateStatus(text: "SERVICE RUNNING", color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 1.0))
         } else {
-            updateStatus(text: "SYSTEM STANDBY", color: UIColor(white: 1.0, alpha: 0.4))
+            updateStatus(text: "SYSTEM STANDBY", color: UIColor(white: 1.0, alpha: 0.5))
         }
     }
 
@@ -734,8 +755,8 @@ class ViewController: UIViewController {
     private func startPulseAnimation() {
         let pulse = CABasicAnimation(keyPath: "transform.scale")
         pulse.fromValue = 1.0
-        pulse.toValue = 1.04
-        pulse.duration = 1.0
+        pulse.toValue = 1.05
+        pulse.duration = 1.2
         pulse.autoreverses = true
         pulse.repeatCount = .infinity
         actionLabel.layer.add(pulse, forKey: "pulse")
@@ -761,6 +782,31 @@ class ViewController: UIViewController {
         layer.shadowRadius = radius
         layer.shadowOpacity = 1.0
         layer.shadowOffset = .zero
+    }
+
+    // MARK: - PiP Delegate Methods
+    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        print("[FakeLag] PiP will start")
+    }
+
+    func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        print("[FakeLag] PiP did start")
+    }
+
+    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        print("[FakeLag] PiP will stop")
+    }
+
+    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        print("[FakeLag] PiP did stop")
+        // Reset state if user closed PiP controller manually
+        if isRunning {
+            actionLabelTapped()
+        }
+    }
+
+    func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
+        print("[FakeLag] PiP Failed to Start: \(error.localizedDescription)")
     }
 }
 
@@ -880,7 +926,7 @@ class FloatingViewController: UIViewController {
         
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         
-        // Dynamic Pan gesture
+        // Dynamic Pan gesture (Only active in TrollStore UIWindow mode)
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         view.addGestureRecognizer(panGesture)
     }
@@ -920,9 +966,11 @@ class FloatingViewController: UIViewController {
     }
     
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-        guard let window = view.window else { return }
-        let translation = gesture.translation(in: view)
+        // Only allow manual pan dragging if we are running in our custom FloatingButtonWindow (TrollStore mode).
+        // For Esign PiP mode, the iOS system PiP controller handles dragging automatically.
+        guard let window = view.window, window is FloatingButtonWindow else { return }
         
+        let translation = gesture.translation(in: view)
         let newCenter = CGPoint(
             x: window.center.x + translation.x,
             y: window.center.y + translation.y
@@ -938,5 +986,53 @@ class FloatingViewController: UIViewController {
         )
         
         gesture.setTranslation(.zero, in: view)
+    }
+}
+
+// MARK: - Animated GIF Helper Extension
+extension UIImage {
+    public class func gifImageWithData(_ data: Data) -> UIImage? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
+        
+        let count = CGImageSourceGetCount(source)
+        var images = [UIImage]()
+        var duration = 0.0
+        
+        for i in 0..<count {
+            if let image = CGImageSourceCreateImageAtIndex(source, i, nil) {
+                images.append(UIImage(cgImage: image))
+            }
+            
+            let delaySeconds = UIImage.delayForImageAtIndex(Int(i), source: source)
+            duration += delaySeconds
+        }
+        
+        if duration == 0.0 {
+            duration = Double(count) / 10.0
+        }
+        
+        return UIImage.animatedImage(with: images, duration: duration)
+    }
+
+    public class func gifImageWithName(_ name: String) -> UIImage? {
+        guard let bundleURL = Bundle.main.url(forResource: name, withExtension: "gif") else { return nil }
+        guard let imageData = try? Data(contentsOf: bundleURL) else { return nil }
+        return gifImageWithData(imageData)
+    }
+
+    private class func delayForImageAtIndex(_ index: Int, source: CGImageSource) -> Double {
+        var delay = 0.1
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [String: Any],
+              let gifInfo = properties[kCGImagePropertyGIFDictionary as String] as? [String: Any] else {
+            return delay
+        }
+        
+        if let delayTime = gifInfo[kCGImagePropertyGIFDelayTime as String] as? Double, delayTime > 0 {
+            delay = delayTime
+        } else if let unclampedDelayTime = gifInfo[kCGImagePropertyGIFUnclampedDelayTime as String] as? Double, unclampedDelayTime > 0 {
+            delay = unclampedDelayTime
+        }
+        
+        return delay
     }
 }
