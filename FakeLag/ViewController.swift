@@ -690,7 +690,7 @@ class ViewController: UIViewController {
     private func onLagEnabled() {
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.warning)
-        updateStatus(text: "LAG SYSTEM ACTIVE (400ms)", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
+        updateStatus(text: "LAG SYSTEM ACTIVE (900ms)", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
         startStatusPulse()
     }
 
@@ -771,6 +771,7 @@ class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControl
         
         let pipVC = AVPictureInPictureVideoCallViewController()
         pipVC.preferredContentSize = CGSize(width: 80, height: 80)
+        pipVC.view.backgroundColor = .clear
         
         let overlayVC = FloatingViewController()
         overlayVC.actionHandler = { [weak vc] in
@@ -833,6 +834,11 @@ class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControl
 
     func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
         print("[FakeLag] PiP Failed to Start: \(error.localizedDescription)")
+    }
+
+    func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+        print("[FakeLag] PiP restore UI called - blocking restoration")
+        completionHandler(false)
     }
 }
 
@@ -937,8 +943,8 @@ class FloatingViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         
         // Matte dark obsidian look
-        button.backgroundColor = UIColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.85)
-        button.layer.cornerRadius = 35 // 70x70 size
+        button.backgroundColor = UIColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.6)
+        button.layer.cornerRadius = 40 // 80x80 size
         button.layer.borderWidth = 2.0
         button.layer.borderColor = UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 0.8).cgColor
         
@@ -951,10 +957,10 @@ class FloatingViewController: UIViewController {
         view.addSubview(button)
         
         NSLayoutConstraint.activate([
-            button.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
-            button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
-            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5)
+            button.topAnchor.constraint(equalTo: view.topAnchor),
+            button.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)

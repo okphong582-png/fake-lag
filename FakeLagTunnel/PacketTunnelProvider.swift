@@ -20,9 +20,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     /// Returns current delay in milliseconds.
-    /// Produces a constant ping spike of 400ms instantly when enabled.
+    /// Produces a constant ping spike of 900ms instantly when enabled.
     private var currentDelayMs: Int {
-        return lagEnabled ? 400 : 0
+        return lagEnabled ? 900 : 0
     }
 
     // MARK: - Tunnel lifecycle
