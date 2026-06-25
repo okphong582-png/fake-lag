@@ -807,7 +807,7 @@ class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControl
     }
     
     func setLagActive(_ active: Bool) {
-        if let pipVC = pipVideoCallVC?.childViewControllers.first as? FloatingViewController {
+        if let pipVC = pipVideoCallVC?.children.first as? FloatingViewController {
             pipVC.setLagActive(active)
         }
     }
