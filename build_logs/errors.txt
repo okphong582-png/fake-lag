@@ -1,0 +1,124 @@
+Command line invocation:
+    /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/xcodebuild build -project FakeLag.xcodeproj -target FakeLag -configuration Release -sdk iphoneos -destination generic/platform=iOS CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO PROVISIONING_PROFILE= DEVELOPMENT_TEAM= BUILD_DIR=/Users/runner/work/fake-lag/fake-lag/build
+
+User defaults from command line:
+    IDEPackageSupportUseBuiltinSCM = YES
+
+Build settings from command line:
+    BUILD_DIR = /Users/runner/work/fake-lag/fake-lag/build
+    CODE_SIGN_IDENTITY = 
+    CODE_SIGNING_ALLOWED = NO
+    CODE_SIGNING_REQUIRED = NO
+    DEVELOPMENT_TEAM = 
+    PROVISIONING_PROFILE = 
+    SDKROOT = iphoneos17.5
+
+note: Using codesigning identity override: 
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (2 targets)
+    Target 'FakeLag' in project 'FakeLag'
+        ➜ Explicit dependency on target 'FakeLagTunnel' in project 'FakeLag'
+    Target 'FakeLagTunnel' in project 'FakeLag' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -v
+
+ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/fake-lag/fake-lag/FakeLag/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/ibtool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: f377bfbc35fff0a18e04ff01d9445d1c
+Build description path: /Users/runner/work/fake-lag/fake-lag/build/XCBuildData/f377bfbc35fff0a18e04ff01d9445d1c.xcbuilddata
+ClangStatCache /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache
+    cd /Users/runner/work/fake-lag/fake-lag/FakeLag.xcodeproj
+    /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk -o /var/folders/dq/2t71w9pd3jx50vh3kp15_dt40000gn/C/com.apple.DeveloperTools/15.4-15F31d/Xcode/SDKStatCaches.noindex/iphoneos17.5-21F77-f0fa7969d082b13145125136a829df3a.sdkstatcache
+
+MkDir /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app/PlugIns (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    /bin/mkdir -p /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app/PlugIns
+
+MkDir /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    /bin/mkdir -p /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app
+
+ProcessInfoPlistFile /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLagTunnel.appex/Info.plist /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/Info.plist (in target 'FakeLagTunnel' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    builtin-infoPlistUtility /Users/runner/work/fake-lag/fake-lag/FakeLagTunnel/Info.plist -producttype com.apple.product-type.app-extension -expandbuildsettings -format binary -platform iphoneos -requiredArchitecture arm64 -o /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLagTunnel.appex/Info.plist
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/all-product-headers.yaml (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/all-product-headers.yaml
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag.hmap (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag.hmap
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-project-headers.hmap (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-own-target-headers.hmap (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-generated-files.hmap (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-generated-files.hmap
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-all-target-headers.hmap (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-all-non-framework-target-headers.hmap (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/FakeLag-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag.LinkFileList (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag_const_extract_protocols.json (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag.SwiftFileList (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag-OutputFileMap.json (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    write-file /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Objects-normal/arm64/FakeLag-OutputFileMap.json
+
+GenerateAssetSymbols /Users/runner/work/fake-lag/fake-lag/FakeLag/Assets.xcassets (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/actool --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/assetcatalog_dependencies --output-partial-info-plist /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 14.0 --platform iphoneos --compile /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app /Users/runner/work/fake-lag/fake-lag/FakeLag/Assets.xcassets --bundle-identifier com.fakelag.app --generate-swift-asset-symbols /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+
+CpResource /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app/3987.gif /Users/runner/work/fake-lag/fake-lag/3987.gif (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/fake-lag/fake-lag/3987.gif /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app
+error: /Users/runner/work/fake-lag/fake-lag/3987.gif: No such file or directory (in target 'FakeLag' from project 'FakeLag')
+
+CompileStoryboard /Users/runner/work/fake-lag/fake-lag/FakeLag/Main.storyboard (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/ibtool --errors --warnings --notices --module FakeLag --output-partial-info-plist /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/Main-SBPartialInfo.plist --auto-activate-custom-fonts --target-device iphone --target-device ipad --minimum-deployment-target 14.0 --output-format human-readable-text --compilation-directory /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build /Users/runner/work/fake-lag/fake-lag/FakeLag/Main.storyboard
+
+CompileStoryboard /Users/runner/work/fake-lag/fake-lag/FakeLag/LaunchScreen.storyboard (in target 'FakeLag' from project 'FakeLag')
+    cd /Users/runner/work/fake-lag/fake-lag
+    /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/ibtool --errors --warnings --notices --module FakeLag --output-partial-info-plist /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build/LaunchScreen-SBPartialInfo.plist --auto-activate-custom-fonts --target-device iphone --target-device ipad --minimum-deployment-target 14.0 --output-format human-readable-text --compilation-directory /Users/runner/work/fake-lag/fake-lag/build/FakeLag.build/Release-iphoneos/FakeLag.build /Users/runner/work/fake-lag/fake-lag/FakeLag/LaunchScreen.storyboard
+
+** BUILD FAILED **
+
+
+The following build commands failed:
+	CpResource /Users/runner/work/fake-lag/fake-lag/build/Release-iphoneos/FakeLag.app/3987.gif /Users/runner/work/fake-lag/fake-lag/3987.gif (in target 'FakeLag' from project 'FakeLag')
+(1 failure)
