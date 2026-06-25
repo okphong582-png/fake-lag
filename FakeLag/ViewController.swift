@@ -345,16 +345,17 @@ class ViewController: UIViewController {
                     UIColor(red: 0.8, green: 0.1, blue: 0.1, alpha: 1).cgColor
                 ]
             }
-
-            // Open Free Fire / Free Fire MAX
-            openFreeFireGame()
         }
     }
 
+
     private func triggerLagCycleFromFloatingButton() {
         guard isRunning else { return }
-        guard !isLagging else { return }
-        enableSystemLag()
+        if isLagging {
+            disableSystemLag()
+        } else {
+            enableSystemLag()
+        }
     }
 
     // MARK: - Free Fire launch
@@ -661,19 +662,21 @@ class FloatingViewController: UIViewController {
         // Main round button
         button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("LAG", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .black)
+        button.setTitle("OFF", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .black)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 0.85) // Standby Blue
+        
+        // Custom toggle switch look: translucent dark gray
+        button.backgroundColor = UIColor(red: 0.08, green: 0.08, blue: 0.12, alpha: 0.8)
         button.layer.cornerRadius = 35 // 70x70 size
-        button.layer.borderWidth = 2.5
-        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 3.0
+        button.layer.borderColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1.0).cgColor // Glowing Blue
         
         // Shadow/glow effect
         button.layer.shadowColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1).cgColor
         button.layer.shadowOffset = .zero
-        button.layer.shadowRadius = 12
-        button.layer.shadowOpacity = 0.8
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.9
         
         view.addSubview(button)
         
@@ -715,10 +718,11 @@ class FloatingViewController: UIViewController {
             timerLabel.text = "\(remainingSeconds)"
             
             UIView.animate(withDuration: 0.2) {
-                self.button.backgroundColor = UIColor(red: 1.0, green: 0.25, blue: 0.25, alpha: 0.95) // Active Red
-                self.button.layer.borderColor = UIColor(red: 1.0, green: 0.6, blue: 0.6, alpha: 1).cgColor
+                // Change to active toggle switch: Glowing Orange/Red
+                self.button.backgroundColor = UIColor(red: 1.0, green: 0.2, blue: 0.2, alpha: 0.95)
+                self.button.layer.borderColor = UIColor(red: 1.0, green: 0.5, blue: 0.5, alpha: 1).cgColor
                 self.button.layer.shadowColor = UIColor.red.cgColor
-                self.button.setTitle("", for: .normal)
+                self.button.setTitle("", for: .normal) // hide "OFF"
                 self.timerLabel.alpha = 1
             }
             
@@ -743,10 +747,11 @@ class FloatingViewController: UIViewController {
         } else {
             button.layer.removeAnimation(forKey: "pulse")
             UIView.animate(withDuration: 0.2) {
-                self.button.backgroundColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 0.85) // Standby Blue
-                self.button.layer.borderColor = UIColor.white.cgColor
+                // Return to standby toggle switch: Translucent Dark Blue
+                self.button.backgroundColor = UIColor(red: 0.08, green: 0.08, blue: 0.12, alpha: 0.8)
+                self.button.layer.borderColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1.0).cgColor
                 self.button.layer.shadowColor = UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1).cgColor
-                self.button.setTitle("LAG", for: .normal)
+                self.button.setTitle("OFF", for: .normal)
                 self.timerLabel.alpha = 0
             }
         }
@@ -773,3 +778,4 @@ class FloatingViewController: UIViewController {
         gesture.setTranslation(.zero, in: view)
     }
 }
+
