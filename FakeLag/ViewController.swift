@@ -11,6 +11,13 @@ private let kLagKey       = "lagEnabled"
 private let kTunnelBundle = "com.fakelag.app.tunnel"
 private let kSavedKeyName = "licenseKey"
 
+// MARK: - PiP Manager Protocol (iOS 14+ safe interface)
+protocol PiPManagerProtocol: AnyObject {
+    func start()
+    func stop()
+    func setLagActive(_ active: Bool)
+}
+
 class ViewController: UIViewController {
 
     // MARK: - Main UI Elements
@@ -36,8 +43,8 @@ class ViewController: UIViewController {
     private var antiCrackTimer: Timer?
     private var isCheckingKey = false
 
-    // MARK: - Type-erased PiP Manager for iOS 14 Compatibility
-    private var pipManager: Any?
+    // MARK: - Protocol-based PiP Manager
+    private var pipManager: PiPManagerProtocol?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -342,9 +349,7 @@ class ViewController: UIViewController {
             self.floatingWindow?.isHidden = true
             self.floatingWindow = nil
 
-            if #available(iOS 15.0, *), let manager = self.pipManager as? PiPOverlayManager {
-                manager.stop()
-            }
+            self.pipManager?.stop()
 
             UserDefaults.standard.removeObject(forKey: kSavedKeyName)
             self.showActivationOverlay(errorMessage: reason)
@@ -554,9 +559,7 @@ class ViewController: UIViewController {
                 self.floatingWindow = nil
 
                 // Stop Esign PiP overlay
-                if #available(iOS 15.0, *), let manager = self.pipManager as? PiPOverlayManager {
-                    manager.stop()
-                }
+                self.pipManager?.stop()
             }
 
             disableSystemLag()
@@ -588,7 +591,7 @@ class ViewController: UIViewController {
                         if self.pipManager == nil {
                             self.pipManager = PiPOverlayManager(viewController: self)
                         }
-                        (self.pipManager as? PiPOverlayManager)?.start()
+                        self.pipManager?.start()
                     } else {
                         print("[FakeLag] PiP is only supported on iOS 15.0 or newer.")
                     }
@@ -619,9 +622,7 @@ class ViewController: UIViewController {
         isLagging = true
 
         floatingWindow?.setLagActive(true)
-        if #available(iOS 15.0, *), let manager = pipManager as? PiPOverlayManager {
-            manager.setLagActive(true)
-        }
+        pipManager?.setLagActive(true)
 
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(true, forKey: kLagKey)
@@ -667,9 +668,7 @@ class ViewController: UIViewController {
         isLagging = false
 
         floatingWindow?.setLagActive(false)
-        if #available(iOS 15.0, *), let manager = pipManager as? PiPOverlayManager {
-            manager.setLagActive(false)
-        }
+        pipManager?.setLagActive(false)
 
         let defaults = UserDefaults(suiteName: kAppGroup)
         defaults?.set(false, forKey: kLagKey)
@@ -746,7 +745,7 @@ class ViewController: UIViewController {
         statusLabel.alpha = 1.0
     }
 
-    private func addGlowToLayer(_ layer: CALayer, color: CGColor, radius: CGFloat) {
+    func addGlowToLayer(_ layer: CALayer, color: CGColor, radius: CGFloat) {
         layer.shadowColor = color
         layer.shadowRadius = radius
         layer.shadowOpacity = 1.0
@@ -756,7 +755,7 @@ class ViewController: UIViewController {
 
 // MARK: - PiP Overlay Manager (Requires iOS 15.0+)
 @available(iOS 15.0, *)
-class PiPOverlayManager: NSObject, AVPictureInPictureControllerDelegate {
+class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControllerDelegate {
     weak var viewController: ViewController?
     var pipController: AVPictureInPictureController?
     var pipVideoCallVC: AVPictureInPictureVideoCallViewController?
@@ -890,7 +889,14 @@ class FloatingButtonWindow: UIWindow {
     
     init(actionHandler: @escaping () -> Void) {
         let initialFrame = CGRect(x: 100, y: 150, width: 80, height: 80)
-        super.init(frame: initialFrame)
+        
+        // Handle iOS 13+ Scene Window registration safely
+        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }) as? UIWindowScene {
+            super.init(windowScene: windowScene)
+        } else {
+            super.init(frame: initialFrame)
+        }
+        self.frame = initialFrame
         setupWindow(actionHandler: actionHandler)
     }
     
