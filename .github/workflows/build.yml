@@ -50,7 +50,18 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           PROVISIONING_PROFILE="" \
           DEVELOPMENT_TEAM="" \
-          BUILD_DIR="$(pwd)/build"
+          BUILD_DIR="$(pwd)/build" > xcodebuild.log 2>&1 || (cat xcodebuild.log && exit 1)
+
+    - name: Commit build errors if failed
+      if: failure()
+      run: |
+        mkdir -p build_logs
+        cp xcodebuild.log build_logs/errors.txt || true
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add build_logs/errors.txt
+        git commit -m "chore: save build errors [skip ci]" || true
+        git push
 
     - name: Show build output structure
       run: |
