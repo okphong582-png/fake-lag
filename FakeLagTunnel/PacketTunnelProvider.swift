@@ -19,33 +19,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         UserDefaults(suiteName: kAppGroup)?.bool(forKey: kLagEnabledKey) ?? false
     }
 
-    /// Returns current delay in milliseconds based on elapsed time since lag started.
-    /// Produces a smooth ping spike: 0 → 600 → 600 → 0
+    /// Returns current delay in milliseconds.
+    /// Produces a constant ping spike of 400ms instantly when enabled.
     private var currentDelayMs: Int {
-        guard lagEnabled,
-              let startTime = UserDefaults(suiteName: kAppGroup)?.double(forKey: kLagStartKey),
-              startTime > 0 else { return 0 }
-
-        let elapsed = Date().timeIntervalSince1970 - startTime
-
-        switch elapsed {
-        case ..<0:
-            return 0
-        case 0..<1.0:
-            // Ramp up: 0 → 600 ms over 1 second
-            let ratio = elapsed / 1.0
-            return Int(ratio * 600)
-        case 1.0..<3.0:
-            // Peak: hold at 600 ms
-            return 600
-        case 3.0..<4.0:
-            // Ramp down: 600 → 0 ms over 1 second
-            let ratio = (elapsed - 3.0) / 1.0
-            return Int((1.0 - ratio) * 600)
-        default:
-            // Auto-disable after 4 seconds total
-            return 0
-        }
+        return lagEnabled ? 400 : 0
     }
 
     // MARK: - Tunnel lifecycle
