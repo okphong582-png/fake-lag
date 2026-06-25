@@ -11,7 +11,7 @@ private let kLagKey       = "lagEnabled"
 private let kTunnelBundle = "com.fakelag.app.tunnel"
 private let kSavedKeyName = "licenseKey"
 
-class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
+class ViewController: UIViewController {
 
     // MARK: - Main UI Elements
     private var backgroundImageView: UIImageView!
@@ -29,16 +29,15 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
     private var overlayActivateButton: UIButton?
 
     // MARK: - State Properties
-    private var isRunning = false
+    var isRunning = false
     private var isLagging = false
     private var floatingWindow: FloatingButtonWindow?
     private var silenceEngine = AudioEngineSilence()
     private var antiCrackTimer: Timer?
     private var isCheckingKey = false
 
-    // MARK: - PiP Overlay Properties
-    private var pipController: AVPictureInPictureController?
-    private var pipVideoCallVC: AVPictureInPictureVideoCallViewController?
+    // MARK: - Type-erased PiP Manager for iOS 14 Compatibility
+    private var pipManager: Any?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -168,40 +167,6 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
         ])
 
         startPulseAnimation()
-    }
-
-    // MARK: - Picture-in-Picture Setup
-    private func setupPiP() {
-        guard AVPictureInPictureController.isPictureInPictureSupported() else {
-            print("[FakeLag] PiP is not supported on this device.")
-            return
-        }
-
-        let pipVC = AVPictureInPictureVideoCallViewController()
-        pipVC.preferredContentSize = CGSize(width: 80, height: 80)
-
-        let overlayVC = FloatingViewController()
-        overlayVC.actionHandler = { [weak self] in
-            self?.triggerLagCycleFromFloatingButton()
-        }
-
-        pipVC.addChild(overlayVC)
-        pipVC.view.addSubview(overlayVC.view)
-        overlayVC.view.frame = pipVC.view.bounds
-        overlayVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        overlayVC.didMove(toParent: pipVC)
-
-        self.pipVideoCallVC = pipVC
-
-        let contentSource = AVPictureInPictureController.ContentSource(
-            activeVideoCallSourceView: self.view,
-            contentViewController: pipVC
-        )
-
-        let pipCtrl = AVPictureInPictureController(contentSource: contentSource)
-        pipCtrl.delegate = self
-        pipCtrl.canStartPictureInPictureAutomaticallyFromInline = true
-        self.pipController = pipCtrl
     }
 
     // MARK: - License Verification Logic
@@ -377,8 +342,8 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
             self.floatingWindow?.isHidden = true
             self.floatingWindow = nil
 
-            if self.pipController?.isPictureInPictureActive == true {
-                self.pipController?.stopPictureInPicture()
+            if #available(iOS 15.0, *), let manager = self.pipManager as? PiPOverlayManager {
+                manager.stop()
             }
 
             UserDefaults.standard.removeObject(forKey: kSavedKeyName)
@@ -574,7 +539,7 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
     }
 
     // MARK: - Action Triggers
-    @objc private func actionLabelTapped() {
+    @objc func actionLabelTapped() {
         let feedback = UIImpactFeedbackGenerator(style: .medium)
         feedback.impactOccurred()
 
@@ -589,8 +554,8 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
                 self.floatingWindow = nil
 
                 // Stop Esign PiP overlay
-                if self.pipController?.isPictureInPictureActive == true {
-                    self.pipController?.stopPictureInPicture()
+                if #available(iOS 15.0, *), let manager = self.pipManager as? PiPOverlayManager {
+                    manager.stop()
                 }
             }
 
@@ -619,9 +584,13 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
             } else {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.setupPiP()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        self.pipController?.startPictureInPicture()
+                    if #available(iOS 15.0, *) {
+                        if self.pipManager == nil {
+                            self.pipManager = PiPOverlayManager(viewController: self)
+                        }
+                        (self.pipManager as? PiPOverlayManager)?.start()
+                    } else {
+                        print("[FakeLag] PiP is only supported on iOS 15.0 or newer.")
                     }
                 }
             }
@@ -635,7 +604,7 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
         }
     }
 
-    private func triggerLagCycleFromFloatingButton() {
+    func triggerLagCycleFromFloatingButton() {
         guard isRunning else { return }
         if isLagging {
             disableSystemLag()
@@ -650,8 +619,8 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
         isLagging = true
 
         floatingWindow?.setLagActive(true)
-        if let pipVC = pipVideoCallVC?.childViewControllers.first as? FloatingViewController {
-            pipVC.setLagActive(true)
+        if #available(iOS 15.0, *), let manager = pipManager as? PiPOverlayManager {
+            manager.setLagActive(true)
         }
 
         let defaults = UserDefaults(suiteName: kAppGroup)
@@ -698,8 +667,8 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
         isLagging = false
 
         floatingWindow?.setLagActive(false)
-        if let pipVC = pipVideoCallVC?.childViewControllers.first as? FloatingViewController {
-            pipVC.setLagActive(false)
+        if #available(iOS 15.0, *), let manager = pipManager as? PiPOverlayManager {
+            manager.setLagActive(false)
         }
 
         let defaults = UserDefaults(suiteName: kAppGroup)
@@ -783,8 +752,67 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
         layer.shadowOpacity = 1.0
         layer.shadowOffset = .zero
     }
+}
 
-    // MARK: - PiP Delegate Methods
+// MARK: - PiP Overlay Manager (Requires iOS 15.0+)
+@available(iOS 15.0, *)
+class PiPOverlayManager: NSObject, AVPictureInPictureControllerDelegate {
+    weak var viewController: ViewController?
+    var pipController: AVPictureInPictureController?
+    var pipVideoCallVC: AVPictureInPictureVideoCallViewController?
+    
+    init(viewController: ViewController) {
+        self.viewController = viewController
+        super.init()
+        setupPiP()
+    }
+    
+    private func setupPiP() {
+        guard let vc = viewController, AVPictureInPictureController.isPictureInPictureSupported() else { return }
+        
+        let pipVC = AVPictureInPictureVideoCallViewController()
+        pipVC.preferredContentSize = CGSize(width: 80, height: 80)
+        
+        let overlayVC = FloatingViewController()
+        overlayVC.actionHandler = { [weak vc] in
+            vc?.triggerLagCycleFromFloatingButton()
+        }
+        
+        pipVC.addChild(overlayVC)
+        pipVC.view.addSubview(overlayVC.view)
+        overlayVC.view.frame = pipVC.view.bounds
+        overlayVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        overlayVC.didMove(toParent: pipVC)
+        
+        self.pipVideoCallVC = pipVC
+        
+        let contentSource = AVPictureInPictureController.ContentSource(
+            activeVideoCallSourceView: vc.view,
+            contentViewController: pipVC
+        )
+        
+        let pipCtrl = AVPictureInPictureController(contentSource: contentSource)
+        pipCtrl.delegate = self
+        pipCtrl.canStartPictureInPictureAutomaticallyFromInline = true
+        self.pipController = pipCtrl
+    }
+    
+    func start() {
+        pipController?.startPictureInPicture()
+    }
+    
+    func stop() {
+        if pipController?.isPictureInPictureActive == true {
+            pipController?.stopPictureInPicture()
+        }
+    }
+    
+    func setLagActive(_ active: Bool) {
+        if let pipVC = pipVideoCallVC?.childViewControllers.first as? FloatingViewController {
+            pipVC.setLagActive(active)
+        }
+    }
+    
     func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
         print("[FakeLag] PiP will start")
     }
@@ -799,9 +827,8 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
 
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
         print("[FakeLag] PiP did stop")
-        // Reset state if user closed PiP controller manually
-        if isRunning {
-            actionLabelTapped()
+        if viewController?.isRunning == true {
+            viewController?.actionLabelTapped()
         }
     }
 
