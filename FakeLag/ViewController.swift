@@ -628,7 +628,7 @@ class ViewController: UIViewController {
     }
 
     // MARK: - Lag Tunnel Activation Controls
-    private func enableSystemLag() {
+    func enableSystemLag() {
         guard !isLagging else { return }
         isLagging = true
 
@@ -674,7 +674,7 @@ class ViewController: UIViewController {
         }
     }
 
-    private func disableSystemLag() {
+    func disableSystemLag() {
         guard isLagging else { return }
         isLagging = false
 
@@ -803,7 +803,10 @@ class PiPOverlayManager: NSObject, PiPManagerProtocol, AVPictureInPictureControl
         vc.playerContainerView.layer.addSublayer(playerLayer)
         self.playerLayer = playerLayer
         
-        let pipCtrl = AVPictureInPictureController(playerLayer: playerLayer)
+        guard let pipCtrl = AVPictureInPictureController(playerLayer: playerLayer) else {
+            print("[FakeLag] Failed to initialize AVPictureInPictureController")
+            return
+        }
         pipCtrl.delegate = self
         pipCtrl.requiresLinearPlayback = false
         pipCtrl.canStartPictureInPictureAutomaticallyFromInline = true
