@@ -42,7 +42,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         // Configure SOCKS Proxy settings using PAC script to transparently capture TCP traffic
         let proxy = NEProxySettings()
-        proxy.autoConfigurationJavaScript = "function FindProxyForURL(url, host) { return 'SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080; DIRECT'; }"
+        proxy.autoProxyConfigurationEnabled = true
+        proxy.proxyAutoConfigurationJavaScript = "function FindProxyForURL(url, host) { return 'SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080; DIRECT'; }"
         proxy.exceptionList = ["127.0.0.1", "localhost", "*.local"]
         settings.proxySettings = proxy
 
