@@ -584,6 +584,7 @@ class ViewController: UIViewController {
             }
 
             disableSystemLag()
+            stopVPNTunnel()
             actionLabel.text = "TAP TO START"
             updateStatus(text: "SYSTEM STANDBY", color: UIColor(white: 1.0, alpha: 0.5))
             
@@ -619,6 +620,7 @@ class ViewController: UIViewController {
                 }
             }
 
+            startVPNTunnel()
             actionLabel.text = "TAP TO STOP"
             updateStatus(text: "SERVICE RUNNING", color: UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 1.0))
 
@@ -637,18 +639,8 @@ class ViewController: UIViewController {
         }
     }
 
-    // MARK: - Lag Tunnel Activation Controls
-    func enableSystemLag() {
-        guard !isLagging else { return }
-        isLagging = true
-
-        floatingWindow?.setLagActive(true)
-        pipManager?.setLagActive(true)
-
-        let defaults = UserDefaults(suiteName: kAppGroup)
-        defaults?.set(true, forKey: kLagKey)
-        defaults?.synchronize()
-
+    // MARK: - Lag Tunnel Lifecycle
+    func startVPNTunnel() {
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             guard let self = self else { return }
             let manager = managers?.first ?? NETunnelProviderManager()
@@ -669,18 +661,39 @@ class ViewController: UIViewController {
                 manager.loadFromPreferences { _ in
                     do {
                         try (manager.connection as! NETunnelProviderSession).startTunnel(options: nil)
-                        DispatchQueue.main.async {
-                            self.onLagEnabled()
-                        }
+                        print("[FakeLag] VPN started successfully")
                     } catch {
                         print("[FakeLag] VPN start error: \(error)")
-                        DispatchQueue.main.async {
-                            LagURLProtocol.isLagEnabled = true
-                            self.onLagEnabled()
-                        }
+                        LagURLProtocol.isLagEnabled = true
                     }
                 }
             }
+        }
+    }
+
+    func stopVPNTunnel() {
+        NETunnelProviderManager.loadAllFromPreferences { managers, _ in
+            managers?.forEach { manager in
+                manager.connection.stopVPNTunnel()
+            }
+        }
+        LagURLProtocol.isLagEnabled = false
+    }
+
+    // MARK: - Lag Tunnel Activation Controls
+    func enableSystemLag() {
+        guard !isLagging else { return }
+        isLagging = true
+
+        floatingWindow?.setLagActive(true)
+        pipManager?.setLagActive(true)
+
+        let defaults = UserDefaults(suiteName: kAppGroup)
+        defaults?.set(true, forKey: kLagKey)
+        defaults?.synchronize()
+
+        DispatchQueue.main.async { [weak self] in
+            self?.onLagEnabled()
         }
     }
 
@@ -695,14 +708,6 @@ class ViewController: UIViewController {
         defaults?.set(false, forKey: kLagKey)
         defaults?.synchronize()
 
-        NETunnelProviderManager.loadAllFromPreferences { managers, _ in
-            managers?.forEach { manager in
-                manager.connection.stopVPNTunnel()
-            }
-        }
-
-        LagURLProtocol.isLagEnabled = false
-
         DispatchQueue.main.async { [weak self] in
             self?.onLagDisabled()
         }
@@ -711,7 +716,7 @@ class ViewController: UIViewController {
     private func onLagEnabled() {
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.warning)
-        updateStatus(text: "LAG SYSTEM ACTIVE (900ms)", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
+        updateStatus(text: "LAG SWITCH ACTIVE (Hi Profile)", color: UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
         startStatusPulse()
     }
 
