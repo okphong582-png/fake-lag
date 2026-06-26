@@ -40,10 +40,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let dns = NEDNSSettings(servers: ["8.8.8.8", "8.8.4.4", "1.1.1.1"])
         settings.dnsSettings = dns
 
-        // Configure SOCKS Proxy settings to transparently capture TCP traffic
+        // Configure SOCKS Proxy settings using PAC script to transparently capture TCP traffic
         let proxy = NEProxySettings()
-        proxy.socksEnabled = true
-        proxy.socksServer = NEProxyServer(address: "127.0.0.1", port: 1080)
+        proxy.autoConfigurationJavaScript = "function FindProxyForURL(url, host) { return 'SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080; DIRECT'; }"
         proxy.exceptionList = ["127.0.0.1", "localhost", "*.local"]
         settings.proxySettings = proxy
 
@@ -102,7 +101,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 // MARK: - Socks5 Server Implementation
 class Socks5Server {
     private var listener: NWListener?
-    private var connections: Set<NWConnection> = []
+    private var connections: [UUID: NWConnection] = [:]
 
     func start(port: UInt16) throws {
         let params = NWParameters.tcp
@@ -118,26 +117,27 @@ class Socks5Server {
     func stop() {
         listener?.cancel()
         listener = nil
-        for conn in connections {
+        for conn in connections.values {
             conn.cancel()
         }
         connections.removeAll()
     }
 
     private func handleConnection(_ client: NWConnection) {
-        connections.insert(client)
+        let id = UUID()
+        connections[id] = client
         client.stateUpdateHandler = { [weak self] state in
             if case .cancelled = state {
-                self?.connections.remove(client)
+                self?.connections.removeValue(forKey: id)
             } else if case .failed = state {
-                self?.connections.remove(client)
+                self?.connections.removeValue(forKey: id)
             }
         }
         client.start(queue: .global())
-        readHandshake(client)
+        readHandshake(client, id: id)
     }
 
-    private func readHandshake(_ client: NWConnection) {
+    private func readHandshake(_ client: NWConnection, id: UUID) {
         client.receive(minimumIncompleteLength: 2, maximumLength: 2) { [weak self] (data, _, _, error) in
             guard let self = self, error == nil, let data = data, data.count == 2 else {
                 client.cancel()
@@ -160,7 +160,7 @@ class Socks5Server {
                 let response = Data([0x05, 0x00])
                 client.send(content: response, completion: .contentProcessed({ [weak self] error in
                     if error == nil {
-                        self?.readRequest(client)
+                        self?.readRequest(client, id: id)
                     } else {
                         client.cancel()
                     }
@@ -169,7 +169,7 @@ class Socks5Server {
         }
     }
 
-    private func readRequest(_ client: NWConnection) {
+    private func readRequest(_ client: NWConnection, id: UUID) {
         client.receive(minimumIncompleteLength: 4, maximumLength: 4) { [weak self] (data, _, _, error) in
             guard let self = self, error == nil, let data = data, data.count == 4 else {
                 client.cancel()
@@ -193,7 +193,7 @@ class Socks5Server {
                     let ip = addrPortData.subdata(in: 0..<4)
                     let port = UInt16(addrPortData[4]) << 8 | UInt16(addrPortData[5])
                     let ipString = "\(ip[0]).\(ip[1]).\(ip[2]).\(ip[3])"
-                    self.connectToDestination(client, host: ipString, port: port)
+                    self.connectToDestination(client, host: ipString, port: port, id: id)
                 }
             } else if atyp == 0x03 { // Domain Name
                 client.receive(minimumIncompleteLength: 1, maximumLength: 1) { [weak self] (lenData, _, _, error) in
@@ -212,7 +212,7 @@ class Socks5Server {
                         let portHigh = domainPortData[domainLen]
                         let portLow = domainPortData[domainLen + 1]
                         let port = UInt16(portHigh) << 8 | UInt16(portLow)
-                        self.connectToDestination(client, host: domainString, port: port)
+                        self.connectToDestination(client, host: domainString, port: port, id: id)
                     }
                 }
             } else {
@@ -221,7 +221,7 @@ class Socks5Server {
         }
     }
 
-    private func connectToDestination(_ client: NWConnection, host: String, port: UInt16) {
+    private func connectToDestination(_ client: NWConnection, host: String, port: UInt16, id: UUID) {
         let destEndpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!)
         let destConn = NWConnection(to: destEndpoint, using: .tcp)
 
